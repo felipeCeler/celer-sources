@@ -1,4 +1,4 @@
-celer-sources
+Celer Library Sources
 =============
 
-Celer Frameworks
+Celer Libraries
