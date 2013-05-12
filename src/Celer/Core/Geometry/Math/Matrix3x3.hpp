@@ -4,8 +4,6 @@
 #include <iostream>
 
 #include <Celer/Core/Geometry/Math/Vector3.hpp>
-#include <Celer/Core/Geometry/Math/Point3.hpp>
-
 
 namespace Celer {
 
@@ -32,13 +30,11 @@ namespace Celer {
 	public:
 
 		friend class Vector3<Real>;
-		friend class Point3<Real>;
 		/*! @name Defining a Matrix3x3 */
 		//@{
 		Matrix3x3();
 		Matrix3x3( Real a11, Real a12, Real a13,Real a21, Real a22, Real a23,Real a31, Real a32, Real a33 );
 		Matrix3x3( const Vector3<Real>& row1, const Vector3<Real>& row2, const Vector3<Real>& row3 );
-		Matrix3x3( const Point3<Real>& row1, const Point3<Real>& row2, const Point3<Real>& row3 );
 		virtual ~Matrix3x3();
 		Matrix3x3<Real>& 		operator=( const Matrix3x3<Real>& A);
 		//@}
@@ -78,7 +74,7 @@ namespace Celer {
 		template <class T>
 		friend Vector3<T> 		operator*( const Matrix3x3<T>& a, const Vector3<T>& v );
 		template <class T>
-		friend Point3<T>  		operator*( const Matrix3x3<T>& a, const Point3<T>& p );
+		friend Vector3<T>  		operator*( const Matrix3x3<T>& a, const Vector3<T>& p );
 		//@}
 
 
@@ -116,14 +112,6 @@ namespace Celer {
 
 	template <class Real>
 	Matrix3x3<Real>::Matrix3x3( const Vector3<Real>& row1, const Vector3<Real>& row2, const Vector3<Real>& row3 )
-	{
-		this->m[ 0 ].x = row1.x; this->m[ 0 ].y = row1.y; this->m[ 0 ].z = row1.z;
-		this->m[ 1 ].x = row2.x; this->m[ 1 ].y = row2.y; this->m[ 1 ].z = row2.z;
-		this->m[ 2 ].x = row3.x; this->m[ 2 ].y = row3.y; this->m[ 2 ].z = row3.z;
-	};
-
-	template <class Real>
-	Matrix3x3<Real>::Matrix3x3( const Point3<Real>& row1, const Point3<Real>& row2, const Point3<Real>& row3 )
 	{
 		this->m[ 0 ].x = row1.x; this->m[ 0 ].y = row1.y; this->m[ 0 ].z = row1.z;
 		this->m[ 1 ].x = row2.x; this->m[ 1 ].y = row2.y; this->m[ 1 ].z = row2.z;
@@ -340,20 +328,9 @@ namespace Celer {
 	};
 
 	template <class Real>
-	inline Vector3<Real> operator* ( const Matrix3x3<Real>& a, const Vector3<Real>& u)
+	inline Vector3<Real> operator* ( const Matrix3x3<Real>& a, const Vector3<Real>& p)
 	{
 		return ( Vector3<Real>
-		( a[ 0 ].x * u.x + a[ 0 ].y * u.y + a[ 0 ].z * u.z,
-	      a[ 1 ].x * u.x + a[ 1 ].y * u.y + a[ 1 ].z * u.z,
-	      a[ 2 ].x * u.x + a[ 2 ].y * u.y + a[ 2 ].z * u.z )
-		);
-
-	};
-
-	template <class Real>
-	inline Point3<Real> operator* ( const Matrix3x3<Real>& a, const Point3<Real>& p)
-	{
-		return ( Point3<Real>
 		( a[ 0 ].x * p.x + a[ 0 ].y * p.y + a[ 0 ].z * p.z,
 	      a[ 1 ].x * p.x + a[ 1 ].y * p.y + a[ 1 ].z * p.z,
 	      a[ 2 ].x * p.x + a[ 2 ].y * p.y + a[ 2 ].z * p.z )

@@ -15,7 +15,7 @@ namespace Celer
 		PixelBuffer::PixelBuffer ( std::string name )
 		{
 			name_ = name;
-			// TODO Como garantir que um contexto está criado ?
+			// TODO Is the context created ?
 
 			Celer::OpenGL::OpenGLContext::instance( )->glewInitialize( name_ );
 
@@ -79,31 +79,31 @@ namespace Celer
 
 		void PixelBuffer::setData ( unsigned size , const void * data , GLenum usage )
 		{
-			// TODO Tests if the Buffer is bound. Is this really important
+			// TODO Tests if the Buffer is bound. Is this really important ?
 			glBufferDataARB ( target_ , size , data , usage );
 		}
 
 		void PixelBuffer::setSubData ( unsigned offs , unsigned size , const void * data )
 		{
-			// TODO Tests if the Buffer is bound. Is this really important
+			// TODO Tests if the Buffer is bound. Is this really important ?
 			glBufferSubDataARB ( target_ , offs , size , data );
 		}
 
 		void PixelBuffer::getSubData ( unsigned offs , unsigned size , void * data )
 		{
-			// TODO Tests if the Buffer is bound. Is this really important
+			// TODO Tests if the Buffer is bound. Is this really important ?
 			glGetBufferSubDataARB ( target_ , offs , size , data );
 		}
 
 		void * PixelBuffer::map ( GLenum access )
 		{
-			// TODO Tests if the Buffer is bound. Is this really important
+			// TODO Tests if the Buffer is bound. Is this really important ?
 			return glMapBufferARB ( target_ , access );
 		}
 
 		bool PixelBuffer::unmap ( )
 		{
-			// TODO Tests if the Buffer is bound. Is this really important
+			// TODO Tests if the Buffer is bound. Is this really important ?
 			return glUnmapBufferARB ( target_ ) == GL_TRUE;
 		}
 

@@ -5,7 +5,6 @@
 #include <windows.h>
 #endif
 
-#include <GL/gl.h>
 #include <iostream>
 
 #include <Celer/Core/Geometry/Math/Matrix4x4.hpp>
@@ -19,7 +18,7 @@
  *@brief Class that represent a dense 4x4 Matrix and Homogeneous Coordinate ..
  *@details coming soon , but ... coming soon  ... wait ¬¬.
  *@author Felipe Moura.
- *@version 1.0.
+ *@version 0.1.0
  *@todo OpenGL interface and a C style array, Why MakeView ans MakeProjection dont need The Transpose?
  *@todo Não deu certo integrar por que minha nova 3x3 e 4x4 matrix estavam colum major , por isso dava dando bugs ...
  *@por que eu tava armazenando em 16 variáveis e não mais nuam [][]  , e tava ido direto para colum major
@@ -33,418 +32,390 @@ namespace Celer
 	template < class Real >
 	class Camera
 	{
+
+
 		public:
-
-			typedef Celer::Quaternion<Real> Quaternion;
-			typedef Celer::Matrix4x4<Real> Matrix4x4;
-			typedef Celer::Vector4<Real> Vector4;
-			typedef Celer::Vector3<Real> Vector3;
-			typedef Celer::Vector2<int> Vector2;
-
 			enum CameraBehavior
 			{
 				FIRST_PERSON, FLIGHT, REVOLVE_AROUND_MODE
 			};
 
-			Camera ( );
-
-			Celer::Matrix4x4<Real> getViewMatrix ( );
-
-			void getViewport ( GLint viewport[4] ) const;
-
-			void SetBehavior ( enum CameraBehavior p );
-
-			Celer::Vector3<Real> Focus ( );
-
-			void SetFocus ( const Celer::Vector3<Real>& pFocus );
-
-			Celer::Vector3<Real> Eyes ( );
-
-			void SetEyes ( const Celer::Vector3<Real>& pEyes );
-
-			Celer::Vector3<Real> Up ( );
-
-			void SetUp ( const Celer::Vector3<Real>& pUp );
-
-			Real FieldOfView ( );
-
-			void SetFieldOfView ( const Real& pFieldOfView );
-
-			Real AspectRatio ( );
-
-			void SetAspectRatio ( const Real& pAspectRatio );
-
-			void SetAspectRatio ( int width, int height );
-
-			Real NearPlane ( );
-
-			void SetNearPlane ( const Real& pNearPlane );
-
-			Real FarPlane ( );
-
-			void SetFarPlane ( const Real& pFarPlane );
-
-			void SetProjectionMatrix ( Real pFieldOfView , Real pAspectRatio , Real pNearPlane , Real pFarPlane );
-
-			void ComputeProjectionMatrix ( );
-
-			void SetOrthographicProjectionMatrix ( const Real& p_left , const Real& p_right , const Real& p_bottom , const Real& p_top , const Real& p_near , const Real& p_far );
-
-			void ComputeOrthographicProjectionMatrix ( );
-			// From libQGLViewer
-			void LoadProjectionMatrix ( bool reset );
-
-			void LoadOrthographicProjectionMatrix ( bool reset );
-			// From libQGLViewer
-			void LoadModelViewMatrix ( bool reset );
-
-			void MoveForward ( Real Distance );
-			void MoveUpward ( Real Distance );
-			void StrafeRight ( Real Distance );
-
-			void SetMouseInfo ( int x , int y );
-
-			void lockMouse ( bool value );
-
-			void ComputerModelViewMatrix ( );
-
-			Celer::Matrix4x4<Real> ViewMatrix ( );
-
-			void SetViewByMouse ( );
-			Celer::Matrix4x4<Real> ViewMatrixNormal ( );
-			Celer::Matrix4x4<Real> ViewMatrix ( Celer::Vector3<Real>& pEyes , Celer::Vector3<Real>& pFocus , Celer::Vector3<Real>& pUp );
-
-			Celer::Matrix4x4<Real> ModelViewMatrix ( );
-			Celer::Matrix4x4<Real> PespectiveProjectionMatrix ( );
-			Celer::Matrix4x4<Real> OrthographicProjectionMatrix ( );
-
-			void Rotate ( Real headingDegrees , Real pitchDegrees , Real rollDegrees );
-			void rotateOrbit ( Real headingDegrees , Real pitchDegrees , Real rollDegrees );
-
-			void rotateFirstPerson ( Real headingDegrees , Real pitchDegrees );
-
-			void LookAt ( );
-			void Zoom ( Real mouseWheelDelta );
-			void SetWindowSize ( int width , int height );
-
-			void Reset ( );
-
 		private:
 
-			Celer::Vector3<Real> mInitalPosition;
+			/// Camera View - Orientation of The Camera
+			Celer::Vector3<Real> 		initalPosition_;
 
-			Celer::Quaternion<Real> mOrientation;
-			Real mAccumPitchDegrees;
+			Celer::Quaternion<Real> 	orientation_;
+			CameraBehavior 			behavior_;
+			Real 				accumPitchDegrees_;
+			Real 				pitchDegrees_;
+			Real 				headingDegrees_;
+			Real 				rollDegrees_;
 
-			Real pitchDegrees;
-			Real headingDegrees;
-			Real rollDegrees;
+			/// Camera View - Location of The Camera
+			Celer::Vector3<Real> 		target_; 	// Where the camera is focused (Point).
+			Celer::Vector3<Real> 		viewDirection_; // Where the camera looked at  (Vector).
+			Celer::Vector3<Real> 		position_; 	// Camera position.
+			Celer::Vector3<Real> 		up_;		// Camera Orientation.
+			Real				offset_;	// The distance from the camera to the target point.
+									// Used by CameraBehavior::REVOLVE_AROUND_MODE
 
-			Celer::Vector2<int> mouseLockedPosition;
-			Celer::Vector2<int> mousePosition;
-			bool mouseLocked;
+			//
+			Celer::Vector3<Real> 		xAxis_;
+			Celer::Vector3<Real> 		yAxis_;
+			Celer::Vector3<Real> 		zAxis_;
 
-			CameraBehavior mBehavior;
+			Celer::Matrix4x4<Real> 		viewMatrix_;
 
-			Celer::Vector3<Real> mTarget; //Where the camera is focused
-			Celer::Vector3<Real> mViewDirection; //Where the camera looked at
-			Celer::Vector3<Real> mEyes; //Where the camera is. Camera position
-			Celer::Vector3<Real> mUp;
-
-			Celer::Vector3<Real> xAxis;
-			Celer::Vector3<Real> yAxis;
-			Celer::Vector3<Real> zAxis;
-
-			Real mWidth;
-			Real mHeight;
-
-			Real mZoomRadius;
-			Real mMinRadius;
-			Real mMaxRadius;
-
-			Celer::Matrix4x4<Real> mViewMatrix;
-
-			// Pespective
-			Real mFieldOfView;
-			Real mAspectRatio;
-			Real mNearPlane;
-			Real mFarPlane;
+			// TODO Take this part to a new Class. Celer::Frustum !!
+			// Camera will be only for View !
+			// Pespective Projection
+			Real 				fieldOfView_;
+			Real 				aspectRatio_;
+			Real 				perspectiveNearPlane_;
+			Real 				perspectiveFarPlane_;
+			Celer::Matrix4x4<Real> 		perspectiveProjectionMatrix_;
 
 			// Orthographic
-			Real mLeft;
-			Real mRight;
-			Real mBottom;
-			Real mTop;
+			Real 				left_;
+			Real 				right_;
+			Real 				bottom_;
+			Real 				top_;
+			Real 				orthographicNearPlane_;
+			Real 				orthographicFarPlane_;
+			Celer::Matrix4x4<Real> 		orthographicProjectionMatrix_;
 
-			Real orthographicNearPlane_;
-			Real orthographicFarPlane_;
 
-			Celer::Matrix4x4<Real> mPespectiveProjectionMatrix;
 
-			Celer::Matrix4x4<Real> mOrthographicProjectionMatrix;
+			// User Interaction
+			Real 				width_;
+			Real 				height_;
+
+			Real 				zoomRadius_;
+			Real 				minRadius_;
+			Real 				maxRadius_;
+
+			Celer::Vector2<int> 		mouseLockedPosition_;
+			Celer::Vector2<int> 		mousePosition_;
+			bool 				mouseLocked_;
+
+		public:
+
+						Camera 				( );
+			void 			getViewport 			( unsigned int viewport[4] ) const;
+			void 			setBehavior 			( enum CameraBehavior p );
+			/// View Attributes
+			Celer::Vector3<Real> 	viewDirection 			( );
+			void 			setViewDirection 		( const Celer::Vector3<Real>& pviewDirection );
+			Celer::Vector3<Real> 	position 			( );
+			void 			setPosition 			( const Celer::Vector3<Real>& pPosition );
+			Celer::Vector3<Real> 	target 				( ) const;
+			void 			setTarget 			( const Celer::Vector3<Real>& lookAtThis );
+			Celer::Vector3<Real> 	UpVector			( );
+			void 			setUpVector			( const Celer::Vector3<Real>& pUp );
+			void 			setOffset			( const Real& new_offset );
+			template < class OtherReal >
+			void 			setOffset			( const OtherReal& new_offset );
+
+
+			Celer::Quaternion<Real> orientation                     ( ) const;
+			Celer::Matrix4x4<Real> 	normalMatrix 			( );
+			Celer::Matrix4x4<Real> 	viewMatrix 			( );
+			Celer::Matrix4x4<Real> 	viewMatrix			( Celer::Vector3<Real>& pPosition ,
+										  Celer::Vector3<Real>& pFocus ,
+										  Celer::Vector3<Real>& pUp );
+			void 			computerViewMatrix 		( );
+
+			/// Perspective Projection Attributes
+			Real 			fieldOfView 			( );
+			void 			setFieldOfView 			( const Real& pFieldOfView );
+			Real 			aspectRatio 			( );
+			void 			setAspectRatio 			( const Real& pAspectRatio );
+			void 			setAspectRatio 			( int width, int height );
+			Real 			nearPlane 			( );
+			void 			setNearPlane 			( const Real& pNearPlane );
+			Real 			farPlane 			( );
+			void 			setFarPlane 			( const Real& pFarPlane );
+			Celer::Matrix4x4<Real> 	perspectiveProjectionMatrix 	( );
+			void 			setPerspectiveProjectionMatrix 	( Real pFieldOfView ,
+			     			                    		  Real pAspectRatio ,
+			     			                    		  Real pNearPlane ,
+			     			                    		  Real pFarPlane );
+
+			Celer::Matrix4x4<Real> 	orthographicProjectionMatrix 	( );
+			void 			setOrthographicProjectionMatrix ( const Real& p_left ,
+			     			                                  const Real& p_right ,
+			     			                                  const Real& p_bottom ,
+			     			                                  const Real& p_top ,
+			     			                                  const Real& p_near ,
+			     			                                  const Real& p_far );
+
+			/// Mouse and Keyboard Modifiers
+			void 			zoom 				( Real mouseWheelDelta );
+			void 			setWindowSize 			( int width , int height );
+			void 			moveForward 			( Real Distance );
+			void 			moveUpward 			( Real Distance );
+			void 			strafeRight 			( Real Distance );
+			void 			setMouseInfo		        ( int x , int y );
+			void 			setViewByMouse 			( );
+			void 			lockMouse 			( bool value );
+
+			void 		       	rotate 				( Real headingDegrees_ ,
+			     		              				  Real pitchDegrees_ ,
+			     		              				  Real rollDegrees_ );
+			void 		       	rotateOrbit 			( Real headingDegrees_ ,
+			     		                   			  Real pitchDegrees_ ,
+			     		                   			  Real rollDegrees_ );
+			void 		       	rotateFirstPerson 		( Real headingDegrees_ ,
+			     		       	                  		  Real pitchDegrees_ );
+			void 			lookAt 				( );
+			void 			reset 				( );
+
 	};
 
 	template< class Real>
 	Camera<Real>::Camera()
 	{
-		mZoomRadius = 1.0f;
-		mMinRadius = 0.1f;
-		mMaxRadius = 2.0f;
+		zoomRadius_ = static_cast<Real> (1.0);
+		minRadius_ = static_cast<Real> (0.1);
+		maxRadius_ = static_cast<Real> (2.0);
 
-		mInitalPosition = Celer::Vector3<Real>(0.0,0.0,0.0);
+		initalPosition_ = Celer::Vector3<Real>(0.0,0.0,0.0);
 
-		mOrientation = Celer::Quaternion<Real>(1.0,0.0,0.0,0.0);
-		mAccumPitchDegrees = 0.0f;
+		orientation_ = Celer::Quaternion<Real>(1.0,0.0,0.0,0.0);
+		accumPitchDegrees_ = static_cast<Real> (0.0);
 
-		pitchDegrees = 0.0f;
-		headingDegrees = 0.0f;
-		rollDegrees = 0.0f;
+		pitchDegrees_ = static_cast<Real> (0.0);
+		headingDegrees_ = static_cast<Real> (0.0);
+		rollDegrees_ = static_cast<Real> (0.0);
 
-		mouseLockedPosition.Set(0,0);
-		mousePosition.Set(0,0);
-		mouseLocked = 0;
+		mouseLockedPosition_.Set(0,0);
+		mousePosition_.Set(0,0);
+		mouseLocked_ = 0;
 
-		mBehavior = FIRST_PERSON;
+		behavior_ = FIRST_PERSON;
 
-		//Point where the camera is focused
-		mTarget = Celer::Vector3<Real>(0.0,0.0,0.0);
-		mViewDirection = Celer::Vector3<Real>(0.0,0.0,1.0);
-		mEyes = Celer::Vector3<Real>(0.0,0.0,0.0);
-		mUp = Celer::Vector3<Real>(0.0,1.0,0.0);
+		// Point where the camera is focused
+		target_ = Celer::Vector3<Real>(0.0,0.0,0.0);
+		viewDirection_ = Celer::Vector3<Real>(0.0,0.0,1.0);
+		position_ = Celer::Vector3<Real>(0.0,0.0,0.0);
+		up_ = Celer::Vector3<Real>(0.0,1.0,0.0);
+		offset_ = 7.0f;
 
-		mViewMatrix.Identity();
+		viewMatrix_.identity();
 
-		mFieldOfView = 60.0;
-		mAspectRatio = 1.0f;
-		mNearPlane = 0.001f;
-		mFarPlane = 100000.0f;
+		fieldOfView_ = static_cast<Real> (60.0);
+		aspectRatio_ = static_cast<Real> (1.0);
 
-		orthographicNearPlane_ = -100.0;
-		orthographicFarPlane_  = 100.0;
+		// Default model being [-1,+1]
+		perspectiveNearPlane_ = static_cast<Real> (0.1);
+		perspectiveFarPlane_ = static_cast<Real> (100.0);
 
-		LookAt();
+		orthographicNearPlane_ = static_cast<Real> (-100.0);
+		orthographicFarPlane_  = static_cast<Real> (100.0);
+
+		lookAt();
 
 	}
 
-	template < class Real >
-	Celer::Matrix4x4<Real> Camera<Real>::getViewMatrix ( )
-	{
-		return mViewMatrix;
-	}
+
 
 	template < class Real >
-	void Camera<Real>::getViewport ( GLint viewport[4] ) const
+	void Camera<Real>::getViewport ( unsigned int viewport[4] ) const
 	{
 		viewport[0] = 0;
 		viewport[1] = 0;
-		viewport[2] = mWidth;
-		viewport[3] = mHeight;
+		viewport[2] = width_;
+		viewport[3] = height_;
 	}
 
 	template < class Real >
-	void Camera<Real>::SetBehavior ( enum CameraBehavior p )
+	void Camera<Real>::setBehavior ( enum CameraBehavior newBehavior )
 	{
-		mBehavior = p;
+		behavior_ = newBehavior;
 	}
 
 	template < class Real >
-	Celer::Vector3<Real> Camera<Real>::Focus ( )
+	Celer::Vector3<Real> Camera<Real>::viewDirection ( )
 	{
-		return mViewDirection;
+		return viewDirection_;
 	}
 
 	template < class Real >
-	void Camera<Real>::SetFocus ( const Celer::Vector3<Real>& pFocus )
+	void Camera<Real>::setViewDirection ( const Celer::Vector3<Real>& newViewDirection )
 	{
-		mViewDirection = pFocus;
+		viewDirection_ = newViewDirection;
 	}
 
 	template < class Real >
-	Celer::Vector3<Real> Camera<Real>::Eyes ( )
+	Celer::Vector3<Real> Camera<Real>::position ( )
 	{
-		return mEyes;
+		return position_;
 
 	}
 
 	template < class Real >
-	void Camera<Real>::SetEyes ( const Celer::Vector3<Real>& pEyes )
+	Celer::Vector3<Real> Camera<Real>::target ( ) const
 	{
-		mEyes = pEyes;
+		return target_;
 	}
 
 	template < class Real >
-	Celer::Vector3<Real> Camera<Real>::Up ( )
+	void Camera<Real>::setTarget ( const Celer::Vector3<Real>& lookAtThis )
 	{
-		return mUp;
+		target_ = lookAtThis;
 	}
 
 	template < class Real >
-	void Camera<Real>::SetUp ( const Celer::Vector3<Real>& pUp )
+	void Camera<Real>::setPosition ( const Celer::Vector3<Real>& newPosition )
 	{
-		mUp = pUp;
+		position_ = newPosition;
 	}
 
 	template < class Real >
-	Real Camera<Real>::FieldOfView ( )
+	Celer::Vector3<Real> Camera<Real>::UpVector ( )
 	{
-		return mFieldOfView;
+		return up_;
 	}
 
 	template < class Real >
-	void Camera<Real>::SetFieldOfView ( const Real& pFieldOfView )
+	void Camera<Real>::setUpVector ( const Celer::Vector3<Real>& newUpVector )
 	{
-		mFieldOfView = pFieldOfView;
-		SetProjectionMatrix ( pFieldOfView , mAspectRatio , mNearPlane , mFarPlane );
+		up_ = newUpVector;
 	}
 
 	template < class Real >
-	Real Camera<Real>::AspectRatio ( )
+	void Camera<Real>::setOffset ( const Real& new_offset )
 	{
-		return mAspectRatio;
+		offset_ = new_offset;
+	}
+
+
+	template < class Real >
+	template < class OtherReal >
+	void Camera<Real>::setOffset ( const OtherReal& new_offset )
+	{
+		offset_ = static_cast<Real> (new_offset);
+	}
+
+
+	template < class Real >
+	Real Camera<Real>::fieldOfView ( )
+	{
+		return fieldOfView_;
 	}
 
 	template < class Real >
-	void Camera<Real>::SetAspectRatio ( const Real& pAspectRatio )
+	void Camera<Real>::setFieldOfView ( const Real& newFieldOfView )
 	{
-		mAspectRatio = pAspectRatio;
-		SetProjectionMatrix ( mFieldOfView , pAspectRatio , mNearPlane , mFarPlane );
+		fieldOfView_ = newFieldOfView;
+		setPerspectiveProjectionMatrix ( newFieldOfView , aspectRatio_ , perspectiveNearPlane_ , perspectiveFarPlane_ );
 	}
 
 	template < class Real >
-	void Camera<Real>::SetAspectRatio ( int width, int height )
+	Real Camera<Real>::aspectRatio ( )
 	{
-			mAspectRatio = static_cast<Real>(width)/static_cast<Real>(height);
-			SetProjectionMatrix ( mFieldOfView , mAspectRatio , mNearPlane , mFarPlane );
+		return aspectRatio_;
 	}
 
 	template < class Real >
-	Real Camera<Real>::NearPlane ( )
+	void Camera<Real>::setAspectRatio ( const Real& newAspectRatio )
 	{
-		return mNearPlane;
+		aspectRatio_ = newAspectRatio;
+		setPerspectiveProjectionMatrix ( fieldOfView_ , newAspectRatio , perspectiveNearPlane_ , perspectiveFarPlane_ );
 	}
 
 	template < class Real >
-	void Camera<Real>::SetNearPlane ( const Real& pNearPlane )
+	void Camera<Real>::setAspectRatio ( int width, int height )
 	{
-		SetProjectionMatrix ( mFieldOfView , mAspectRatio , pNearPlane , mFarPlane );
+			aspectRatio_ = static_cast<Real>(width)/static_cast<Real>(height);
+			setPerspectiveProjectionMatrix ( fieldOfView_ , aspectRatio_ , perspectiveNearPlane_ , perspectiveFarPlane_ );
 	}
 
 	template < class Real >
-	Real Camera<Real>::FarPlane ( )
+	Real Camera<Real>::nearPlane ( )
 	{
-		return mFarPlane;
+		return perspectiveNearPlane_;
 	}
 
 	template < class Real >
-	void Camera<Real>::SetFarPlane ( const Real& pFarPlane )
+	void Camera<Real>::setNearPlane ( const Real& pNearPlane )
 	{
-		SetProjectionMatrix ( mFieldOfView , mAspectRatio , mNearPlane , pFarPlane );
+		setPerspectiveProjectionMatrix ( fieldOfView_ , aspectRatio_ , pNearPlane , perspectiveFarPlane_ );
 	}
 
 	template < class Real >
-	void Camera<Real>::SetProjectionMatrix ( Real pFieldOfView , Real pAspectRatio , Real pNearPlane , Real pFarPlane )
+	Real Camera<Real>::farPlane ( )
 	{
-		mFieldOfView = pFieldOfView;
-
-		mAspectRatio = pAspectRatio;
-		mNearPlane = pNearPlane;
-		mFarPlane = pFarPlane;
-
-		mPespectiveProjectionMatrix = Celer::Matrix4x4<Real>::MakePespectiveProjectionMatrix ( mFieldOfView * mZoomRadius , mAspectRatio , mNearPlane , mFarPlane );
+		return perspectiveFarPlane_;
 	}
 
 	template < class Real >
-	void Camera<Real>::ComputeProjectionMatrix ( )
+	void Camera<Real>::setFarPlane ( const Real& pFarPlane )
 	{
-		mPespectiveProjectionMatrix = Celer::Matrix4x4<Real>::MakePespectiveProjectionMatrix ( mFieldOfView * mZoomRadius , mAspectRatio , mNearPlane , mFarPlane );
+		setPerspectiveProjectionMatrix ( fieldOfView_ , aspectRatio_ , perspectiveNearPlane_ , pFarPlane );
 	}
 
 	template < class Real >
-	void Camera<Real>::SetOrthographicProjectionMatrix ( const Real& p_left , const Real& p_right , const Real& p_bottom , const Real& p_top , const Real& p_near , const Real& p_far )
+	void Camera<Real>::setPerspectiveProjectionMatrix ( Real pFieldOfView , Real pAspectRatio , Real pNearPlane , Real pFarPlane )
 	{
-		mLeft = p_left;
-		mRight = p_right;
-		mBottom = p_bottom;
-		mTop = p_top;
+		fieldOfView_ = pFieldOfView;
+
+		aspectRatio_ = pAspectRatio;
+		perspectiveNearPlane_ = pNearPlane;
+		perspectiveFarPlane_ = pFarPlane;
+
+		perspectiveProjectionMatrix_ = Celer::Matrix4x4<Real>::makePerspectiveProjectionMatrix ( fieldOfView_ * zoomRadius_ , aspectRatio_ , perspectiveNearPlane_ , perspectiveFarPlane_ );
+	}
+
+//	template < class Real >
+//	void Camera<Real>::ComputeProjectionMatrix ( )
+//	{
+//		perspectiveProjectionMatrix_ = Celer::Matrix4x4<Real>::MakePespectiveProjectionMatrix ( fieldOfView_ * zoomRadius_ , aspectRatio_ , perspectiveNearPlane_ , perspectiveFarPlane_ );
+//	}
+
+	template < class Real >
+	void Camera<Real>::setOrthographicProjectionMatrix ( const Real& p_left , const Real& p_right , const Real& p_bottom , const Real& p_top , const Real& p_near , const Real& p_far )
+	{
+		left_ = p_left;
+		right_ = p_right;
+		bottom_ = p_bottom;
+		top_ = p_top;
 
 		orthographicNearPlane_ = p_near;
 		orthographicFarPlane_ = p_far;
 
-		mOrthographicProjectionMatrix = Celer::Matrix4x4<Real>::MakeOrthographicProjectionMatrix ( mLeft , mRight , mBottom , mTop , orthographicNearPlane_ , orthographicFarPlane_);
+		orthographicProjectionMatrix_ = Celer::Matrix4x4<Real>::makeOrthographicProjectionMatrix ( left_ , right_ , bottom_ , top_ , orthographicNearPlane_ , orthographicFarPlane_);
+	}
+
+//	template < class Real >
+//	void Camera<Real>::ComputeOrthographicProjectionMatrix ( )
+//	{
+//		orthographicProjectionMatrix_ = Celer::Matrix4x4<Real>::MakeOrthographicProjectionMatrix ( left_ , right_ , bottom_ , top_ , orthographicNearPlane_ , orthographicFarPlane_);
+//	}
+
+	template < class Real >
+	void Camera<Real>::moveForward ( Real Distance )
+	{
+		position_ += ( viewDirection_ * Distance );
 	}
 
 	template < class Real >
-	void Camera<Real>::ComputeOrthographicProjectionMatrix ( )
+	void Camera<Real>::moveUpward ( Real Distance )
 	{
-		mOrthographicProjectionMatrix = Celer::Matrix4x4<Real>::MakeOrthographicProjectionMatrix ( mLeft , mRight , mBottom , mTop , orthographicNearPlane_ , orthographicFarPlane_);
-	}
-
-//	// From libQGLViewer
-	template < class Real >
-	void Camera<Real>::LoadProjectionMatrix ( bool reset = 1 )
-	{
-		glMatrixMode ( GL_PROJECTION );
-
-		if ( reset )
-			glLoadIdentity ( );
-
-		ComputeProjectionMatrix ( );
-		glMultMatrixf ( ( ~mPespectiveProjectionMatrix ).ToRealPtr ( ) );
-
-//		std::cout << "mFieldOfView :" << mFieldOfView  << std::endl;
-//		std::cout << "mAspectRatio :" << mAspectRatio << std::endl;
-//		std::cout << "mNearPlane :" << mNearPlane << std::endl;
-//		std::cout << "mFarPlane :" << mFarPlane << std::endl;
+		position_ += ( up_ * Distance );
 	}
 
 	template < class Real >
-	void Camera<Real>::LoadOrthographicProjectionMatrix ( bool reset = 1 )
+	void Camera<Real>::strafeRight ( Real Distance )
 	{
-		glMatrixMode ( GL_PROJECTION );
-
-		if ( reset )
-			glLoadIdentity ( );
-
-		ComputeOrthographicProjectionMatrix ( );
-		glMultMatrixf ( ( ~mOrthographicProjectionMatrix ).ToRealPtr ( ) );
-	}
-
-//	// From libQGLViewer
-	template < class Real >
-	void Camera<Real>::LoadModelViewMatrix ( bool reset = 1 )
-	{
-		// WARNING: makeCurrent must be called by every calling method
-		glMatrixMode ( GL_MODELVIEW );
-		glLoadIdentity ( );
-		ComputerModelViewMatrix ( );
-		if ( reset )
-			glLoadMatrixf ( ( ~mViewMatrix ).ToRealPtr ( ) );
-		else
-			glMultMatrixf ( ( ~mViewMatrix ).ToRealPtr ( ) );
+		position_ += ( ( viewDirection_ ) ^ up_ ) * Distance;
 	}
 
 	template < class Real >
-	void Camera<Real>::MoveForward ( Real Distance )
+	void Camera<Real>::setMouseInfo ( int x , int y )
 	{
-		mEyes += ( mViewDirection * Distance );
-	}
-
-	template < class Real >
-	void Camera<Real>::MoveUpward ( Real Distance )
-	{
-		mEyes += ( mUp * Distance );
-	}
-
-	template < class Real >
-	void Camera<Real>::StrafeRight ( Real Distance )
-	{
-		mEyes += ( ( mViewDirection ) ^ mUp ) * Distance;
-	}
-
-	template < class Real >
-	void Camera<Real>::SetMouseInfo ( int x , int y )
-	{
-		mousePosition.Set ( x , y );
+		mousePosition_.Set ( x , y );
 	}
 
 	template < class Real >
@@ -452,142 +423,117 @@ namespace Celer
 	{
 		if ( value )
 		{
-			mouseLockedPosition = mousePosition;
+			mouseLockedPosition_ = mousePosition_;
 		}
 
-		mouseLocked = value;
+		mouseLocked_ = value;
 	}
 
 	template < class Real >
-	void Camera<Real>::ComputerModelViewMatrix ( )
+	void Camera<Real>::computerViewMatrix ( )
 	{
 
-		mViewMatrix = mOrientation.To4x4Matrix ( );
+		viewMatrix_ = orientation_.to4x4Matrix ( );
 
-		xAxis.Set ( mViewMatrix[0][0] , mViewMatrix[0][1] , mViewMatrix[0][2] );
-		yAxis.Set ( mViewMatrix[1][0] , mViewMatrix[1][1] , mViewMatrix[1][2] );
-		zAxis.Set ( mViewMatrix[2][0] , mViewMatrix[2][1] , mViewMatrix[2][2] );
+		xAxis_.set ( viewMatrix_[0][0] , viewMatrix_[0][1] , viewMatrix_[0][2] );
+		yAxis_.set ( viewMatrix_[1][0] , viewMatrix_[1][1] , viewMatrix_[1][2] );
+		zAxis_.set ( viewMatrix_[2][0] , viewMatrix_[2][1] , viewMatrix_[2][2] );
 
-		mViewDirection = -zAxis;
+		viewDirection_ = -zAxis_;
 
-		if ( mBehavior == REVOLVE_AROUND_MODE )
+		if ( behavior_ == REVOLVE_AROUND_MODE )
 		{
 			// Calculate the new camera position based on the current
 			// orientation. The camera must always maintain the same
 			// distance from the target. Use the current offset vector
 			// to determine the correct distance from the target.
 
-			mEyes = mTarget + ( zAxis * 7.0f );
+			position_ = target_ + ( zAxis_ * offset_ );
 		}
 
-		mViewMatrix[0][3] -= ( xAxis * mEyes );
-		mViewMatrix[1][3] -= ( yAxis * mEyes );
-		mViewMatrix[2][3] -= ( zAxis * mEyes );
+		viewMatrix_[0][3] -= ( xAxis_ * position_ );
+		viewMatrix_[1][3] -= ( yAxis_ * position_ );
+		viewMatrix_[2][3] -= ( zAxis_ * position_ );
 
 	}
 
 	template < class Real >
-	Celer::Matrix4x4<Real> Camera<Real>::ViewMatrix ( )
+	Celer::Matrix4x4<Real> Camera<Real>::viewMatrix ( )
 	{
-
-		mViewMatrix = mOrientation.To4x4Matrix ( );
-
-		xAxis.Set ( mViewMatrix[0][0] , mViewMatrix[0][1] , mViewMatrix[0][2] );
-		yAxis.Set ( mViewMatrix[1][0] , mViewMatrix[1][1] , mViewMatrix[1][2] );
-		zAxis.Set ( mViewMatrix[2][0] , mViewMatrix[2][1] , mViewMatrix[2][2] );
-
-		mViewDirection = -zAxis;
-
-		if ( mBehavior == REVOLVE_AROUND_MODE )
-		{
-			// Calculate the new camera position based on the current
-			// orientation. The camera must always maintain the same
-			// distance from the target. Use the current offset vector
-			// to determine the correct distance from the target.
-
-			mEyes = mTarget + ( zAxis * 3.0f );
-		}
-
-		mViewMatrix[0][3] = - ( xAxis * mEyes );
-		mViewMatrix[1][3] = - ( yAxis * mEyes );
-		mViewMatrix[2][3] = - ( zAxis * mEyes );
-		//LookAt();
-		return mViewMatrix; //ViewMatrixNormal();
-
+		return viewMatrix_;
 	}
 
 	template < class Real >
-	void Camera<Real>::SetViewByMouse ( )
+	void Camera<Real>::setViewByMouse ( )
 	{
 		Real pitch = 0.0f, heading = 0.0f;
 
-		if ( ( mousePosition == mouseLockedPosition ) || !mouseLocked )
+		if ( ( mousePosition_ == mouseLockedPosition_ ) || !mouseLocked_ )
 		{
 			return;
 		}
 
-		pitch = Real ( mouseLockedPosition.x - mousePosition.x ) * Math::kDeg2Rad * 0.2;
-		heading = Real ( mouseLockedPosition.y - mousePosition.y ) * Math::kDeg2Rad * 0.2;
 
-		Rotate ( -heading , -pitch , 0.0f );
+		rotate ( -heading , -pitch , 0.0f );
 
-		if ( !mouseLocked )
+		if ( !mouseLocked_ )
 		{
-			mouseLockedPosition = mousePosition;
+			mouseLockedPosition_ = mousePosition_;
 		}
 
+
+	}
+	template < class Real >
+	Celer::Quaternion<Real> Camera<Real>::orientation ( ) const
+	{
+			return orientation_;
 	}
 
 	template < class Real >
-	Celer::Matrix4x4<Real> Camera<Real>::ViewMatrixNormal ( )
+	Celer::Matrix4x4<Real> Camera<Real>::normalMatrix ( )
 	{
 
-		return Celer::Matrix4x4<Real>::MakeViewMatrix ( mEyes , mViewDirection , mUp );
+		return Celer::Matrix4x4<Real>::makeViewMatrix ( position_ , viewDirection_ , up_ );
 
 	}
 
 	template < class Real >
-	Celer::Matrix4x4<Real> Camera<Real>::ViewMatrix ( Celer::Vector3<Real>& pEyes , Celer::Vector3<Real>& pFocus , Celer::Vector3<Real>& pUp )
+	Celer::Matrix4x4<Real> Camera<Real>::viewMatrix ( Celer::Vector3<Real>& pPosition , Celer::Vector3<Real>& pviewDirection , Celer::Vector3<Real>& pUp )
 	{
-		return Celer::Matrix4x4<Real>::MakeViewMatrix ( pEyes , pFocus , pUp );
+		return Celer::Matrix4x4<Real>::makeViewMatrix ( pPosition , pviewDirection , pUp );
 	}
 
+
 	template < class Real >
-	Celer::Matrix4x4<Real> Camera<Real>::ModelViewMatrix ( )
+	Celer::Matrix4x4<Real> Camera<Real>::perspectiveProjectionMatrix ( )
 	{
-		return mViewMatrix;
+		return perspectiveProjectionMatrix_;
 	}
 
 	template < class Real >
-	Celer::Matrix4x4<Real> Camera<Real>::PespectiveProjectionMatrix ( )
+	Celer::Matrix4x4<Real> Camera<Real>::orthographicProjectionMatrix ( )
 	{
-		return mPespectiveProjectionMatrix;
+		return orthographicProjectionMatrix_;
 	}
 
 	template < class Real >
-	Celer::Matrix4x4<Real> Camera<Real>::OrthographicProjectionMatrix ( )
-	{
-		return mOrthographicProjectionMatrix;
-	}
-
-	template < class Real >
-	void Camera<Real>::Rotate ( Real headingDegrees , Real pitchDegrees , Real rollDegrees )
+	void Camera<Real>::rotate ( Real headingDegrees_ , Real pitchDegrees_ , Real rollDegrees_ )
 	{
 		// Rotates the camera based on its current behavior.
 		// Note that not all behaviors support rolling.
 
-		pitchDegrees = -pitchDegrees;
-		headingDegrees = -headingDegrees;
-		rollDegrees = -rollDegrees;
+		pitchDegrees_ = -pitchDegrees_;
+		headingDegrees_ = -headingDegrees_;
+		rollDegrees_ = -rollDegrees_;
 
-		switch ( mBehavior )
+		switch ( behavior_ )
 		{
 			case FIRST_PERSON:
-				rotateFirstPerson ( headingDegrees , pitchDegrees );
+				rotateFirstPerson ( headingDegrees_ , pitchDegrees_ );
 				break;
 
 			case REVOLVE_AROUND_MODE:
-				rotateOrbit ( headingDegrees , pitchDegrees , rollDegrees );
+				rotateOrbit ( headingDegrees_ , pitchDegrees_ , rollDegrees_ );
 				break;
 			default:
 				break;
@@ -596,7 +542,7 @@ namespace Celer
 	}
 
 	template < class Real >
-	void Camera<Real>::rotateOrbit ( Real headingDegrees , Real pitchDegrees , Real rollDegrees )
+	void Camera<Real>::rotateOrbit ( Real headingDegrees_ , Real pitchDegrees_ , Real rollDegrees_ )
 	{
 		// Implements the rotation logic for the orbit style camera behavior.
 		// Roll is ignored for target Y axis orbiting.
@@ -611,119 +557,119 @@ namespace Celer
 
 		Celer::Quaternion<Real> rot;
 
-		if ( headingDegrees != 0.0f )
+		if ( headingDegrees_ != 0.0f )
 		{
-			rot.FromAxisAngle ( Celer::Vector3<Real>::UNIT_Y , headingDegrees );
-			mOrientation = mOrientation * rot;
+			rot.fromAxisAngle ( Celer::Vector3<Real>::UNIT_Y , headingDegrees_ );
+			orientation_ = orientation_ * rot;
 		}
 
-		if ( pitchDegrees != 0.0f )
+		if ( pitchDegrees_ != 0.0f )
 		{
-			rot.FromAxisAngle ( Celer::Vector3<Real>::UNIT_X , pitchDegrees );
-			mOrientation = rot * mOrientation;
+			rot.fromAxisAngle ( Celer::Vector3<Real>::UNIT_X , pitchDegrees_ );
+			orientation_ = rot * orientation_;
 		}
-		mOrientation.Normalize ( );
+		orientation_.normalize ( );
 	}
 
 	template < class Real >
-	void Camera<Real>::rotateFirstPerson ( Real headingDegrees , Real pitchDegrees )
+	void Camera<Real>::rotateFirstPerson ( Real headingDegrees_ , Real pitchDegrees_ )
 	{
 		// Implements the rotation logic for the first person style and
 		// spectator style camera behaviors. Roll is ignored.
 
-		mAccumPitchDegrees += pitchDegrees;
+		accumPitchDegrees_ += pitchDegrees_;
 
-		if ( mAccumPitchDegrees > 90.0f )
+		if ( accumPitchDegrees_ > 90.0f )
 		{
-			pitchDegrees = 90.0f - ( mAccumPitchDegrees - pitchDegrees );
-			mAccumPitchDegrees = 90.0f;
+			pitchDegrees_ = 90.0f - ( accumPitchDegrees_ - pitchDegrees_ );
+			accumPitchDegrees_ = 90.0f;
 		}
 
-		if ( mAccumPitchDegrees < -90.0f )
+		if ( accumPitchDegrees_ < -90.0f )
 		{
-			pitchDegrees = -90.0f - ( mAccumPitchDegrees - pitchDegrees );
-			mAccumPitchDegrees = -90.0f;
+			pitchDegrees_ = -90.0f - ( accumPitchDegrees_ - pitchDegrees_ );
+			accumPitchDegrees_ = -90.0f;
 		}
 
 		Celer::Quaternion<Real> rot;
 
 		// Rotate camera about the world y axis.
 		// Note the order the quaternions are multiplied. That is important!
-		if ( headingDegrees != 0.0f )
+		if ( headingDegrees_ != 0.0f )
 		{
-			rot.FromAxisAngle ( Celer::Vector3<Real>::UNIT_Y , headingDegrees );
-			mOrientation = mOrientation * rot;
+			rot.fromAxisAngle ( Celer::Vector3<Real>::UNIT_Y , headingDegrees_ );
+			orientation_ = orientation_ * rot;
 		}
 
 		// Rotate camera about its local x axis.
 		// Note the order the quaternions are multiplied. That is important!
-		if ( pitchDegrees != 0.0f )
+		if ( pitchDegrees_ != 0.0f )
 		{
-			rot.FromAxisAngle ( Celer::Vector3<Real>::UNIT_X , pitchDegrees );
-			mOrientation = rot * mOrientation;
+			rot.fromAxisAngle ( Celer::Vector3<Real>::UNIT_X , pitchDegrees_ );
+			orientation_ = rot * orientation_;
 		}
-		mOrientation.Normalize ( );
+		orientation_.normalize ( );
 	}
 
 	template < class Real >
-	void Camera<Real>::LookAt ( )
+	void Camera<Real>::lookAt ( )
 	{
 
-		zAxis = mViewDirection;
-		zAxis.Normalize ( );
+		zAxis_ = viewDirection_;
+		zAxis_.normalize ( );
 
-		xAxis = ( mUp ^ zAxis );
-		xAxis.Normalize ( );
+		xAxis_ = ( up_ ^ zAxis_ );
+		xAxis_.normalize ( );
 
-		yAxis = ( zAxis ^ xAxis );
-		yAxis.Normalize ( );
+		yAxis_ = ( zAxis_ ^ xAxis_ );
+		yAxis_.normalize ( );
 
-		mViewMatrix[0][0] = xAxis.x;
-		mViewMatrix[0][1] = xAxis.y;
-		mViewMatrix[0][2] = xAxis.z;
-		mViewMatrix[0][3] = - ( xAxis * mEyes );
+		viewMatrix_[0][0] = xAxis_.x;
+		viewMatrix_[0][1] = xAxis_.y;
+		viewMatrix_[0][2] = xAxis_.z;
+		viewMatrix_[0][3] = - ( xAxis_ * position_ );
 
-		mViewMatrix[1][0] = yAxis.x;
-		mViewMatrix[1][1] = yAxis.y;
-		mViewMatrix[1][2] = yAxis.z;
-		mViewMatrix[1][3] = - ( yAxis * mEyes );
+		viewMatrix_[1][0] = yAxis_.x;
+		viewMatrix_[1][1] = yAxis_.y;
+		viewMatrix_[1][2] = yAxis_.z;
+		viewMatrix_[1][3] = - ( yAxis_ * position_ );
 
-		mViewMatrix[2][0] = zAxis.x;
-		mViewMatrix[2][1] = zAxis.y;
-		mViewMatrix[2][2] = zAxis.z;
-		mViewMatrix[2][3] = - ( zAxis * mEyes );
+		viewMatrix_[2][0] = zAxis_.x;
+		viewMatrix_[2][1] = zAxis_.y;
+		viewMatrix_[2][2] = zAxis_.z;
+		viewMatrix_[2][3] = - ( zAxis_ * position_ );
 
 		// Extract the pitch angle from the view matrix.
-		mAccumPitchDegrees = Math::kRad2Deg * ( std::asin ( mViewMatrix[2][1] ) );
+		accumPitchDegrees_ = Math::kRad2Deg * ( std::asin ( viewMatrix_[2][1] ) );
 
-		mOrientation.FromRotationMatrix ( mViewMatrix );
+		orientation_.fromRotationMatrix ( viewMatrix_ );
 	}
 
 	template < class Real >
-	void Camera<Real>::Zoom ( Real mouseWheelDelta )
+	void Camera<Real>::zoom ( Real mouseWheelDelta )
 	{
 	     // Change the radius from the camera to the model based on wheel scrolling
-	     // mZoomRadius -= mouseWheelDelta * 0.1f;
+	     // zoomRadius_ -= mouseWheelDelta * 0.1f;
 
-	     // std::cout << "Wheel "<< mouseWheelDelta << " zoom  "<< mZoomRadius <<  std::endl;
-	     // mZoomRadius  = std::min<Real> ( mMaxRadius, mZoomRadius );
-	     // mZoomRadius  = std::max<Real> ( mMinRadius, mZoomRadius );
+	     // std::cout << "Wheel "<< mouseWheelDelta << " zoom  "<< zoomRadius_ <<  std::endl;
+	     // zoomRadius_  = std::min<Real> ( maxRadius_, zoomRadius_ );
+	     // zoomRadius_  = std::max<Real> ( minRadius_, zoomRadius_ );
 
-	     mViewDirection.z -= 0.2;
+	     viewDirection_.z -= 0.2;
 	}
 
 	template < class Real >
-	void Camera<Real>::SetWindowSize ( int width , int height )
+	void Camera<Real>::setWindowSize ( int width , int height )
 	{
-		mWidth = width;
-		mHeight = height;
+		width_ = width;
+		height_ = height;
 
 	}
 
 	template < class Real >
-	void Camera<Real>::Reset ( )
+	void Camera<Real>::reset ( )
 	{
-		mEyes = mInitalPosition;
+		position_ = initalPosition_;
 
 	}
 

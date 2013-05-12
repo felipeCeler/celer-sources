@@ -40,16 +40,16 @@ namespace Celer{
 		Quaternion( const Real& pAngle, const Vector3<Real>& pAxis );
 
 		Quaternion<Real>& 		operator=(const Quaternion<Real>& quat );
-  	  	void 					SetAngle( const Real& angle );
-  	  	void 					SetAxis( const Vector3<Real>& axis );
-  	  	void 					SetAxis( const Real& x, const Real& y, const Real& z );
+  	  	void 					setAngle( const Real& angle );
+  	  	void 					setAxis( const Vector3<Real>& axis );
+  	  	void 					setAxis( const Real& x, const Real& y, const Real& z );
 
 		/*! @name Accessing the value */
 		//@{
 
 
-  	  	Vector3<Real> 			Axis () const;
-  	  	Real 					Angle() const;
+  	  	Vector3<Real> 			axis () const;
+  	  	Real 					angle() const;
 
 		Real  					operator[]( int index ) const;
 		Real& 					operator[]( int index );
@@ -85,29 +85,29 @@ namespace Celer{
 
 	   	/*!@name Functions */
 	    //@{
-	    Real 			    	Length( void ) const;
-	    Quaternion<Real> 		Inverse( void ) const;
-	    void 					Invert( void );
-	    Real					Norm( void ) const;
-	    void	 				Normalize( void );
-	    Quaternion<Real>		Normalized( void );
-	    Vector3<Real>        	Rotate( const Vector3<Real>& v ) const;
-		Real				    Dot( const Quaternion<Real>& quat ) const;
+	    Real 			    	length( void ) const;
+	    Quaternion<Real> 		inverse( void ) const;
+	    void 					invert( void );
+	    Real					norm( void ) const;
+	    void	 				normalize( void );
+	    Quaternion<Real>		normalized( void );
+	    Vector3<Real>        	rotate( const Vector3<Real>& v ) const;
+		Real				    dot( const Quaternion<Real>& quat ) const;
 
-		void 					Identity();
-		void 					To3x3Matrix( Matrix3x3<Real>& rotationMatrix ) const;
-		Matrix3x3<Real> 		To3x3Matrix( ) const;
-		void 					To4x4Matrix( Matrix4x4<Real>& rotationMatrix ) const;
-		void 					To4x4Matrix( Real * rotMatrix) const;
-		Matrix4x4<Real>  		To4x4Matrix() const;
+		void 					identity();
+		void 					to3x3Matrix( Matrix3x3<Real>& rotationMatrix ) const;
+		Matrix3x3<Real> 		to3x3Matrix( ) const;
+		void 					to4x4Matrix( Matrix4x4<Real>& rotationMatrix ) const;
+		void 					to4x4Matrix( Real * rotMatrix) const;
+		Matrix4x4<Real>  		to4x4Matrix() const;
 
-		void 					FromRotationMatrix( const Matrix4x4<Real>& rotationMatrix );
-		void 					FromAxisAngle( const Vector3<Real>& axis, const Real& degrees );
-		void 					FromHeadPitchRoll( const Real& headDegrees, const Real& pitchDegrees, const Real& rollDegrees);
+		void 					fromRotationMatrix( const Matrix4x4<Real>& rotationMatrix );
+		void 					fromAxisAngle( const Vector3<Real>& axis, const Real& degrees );
+		void 					fromHeadPitchRoll( const Real& headDegrees, const Real& pitchDegrees, const Real& rollDegrees);
 
-		void 					ToAxisAngle( Vector3<Real>& axis, Real& degrees ) const;
-		void 					ToHeadPitchRoll( const Real& headDegrees, const Real& pitchDegrees, const Real& rollDegrees ) const;
-		void 					ToRotationArc( Vector3<Real> &u, Vector3<Real> &v );
+		void 					toAxisAngle( Vector3<Real>& axis, Real& degrees ) const;
+		void 					toHeadPitchRoll( const Real& headDegrees, const Real& pitchDegrees, const Real& rollDegrees ) const;
+		void 					toRotationArc( Vector3<Real> &u, Vector3<Real> &v );
 		//@}
 
 		/*! @name Output stream */
@@ -202,13 +202,13 @@ namespace Celer{
 	};
 
 	template<class Real>
-	inline void Quaternion<Real>::SetAngle( const Real& angle )
+	inline void Quaternion<Real>::setAngle( const Real& angle )
 	{
 		w = angle;
 	}
 
 	template<class Real>
-	inline void Quaternion<Real>::SetAxis( const Vector3<Real>& axis )
+	inline void Quaternion<Real>::setAxis( const Vector3<Real>& axis )
 	{
 		x = axis.x;
 		y = axis.y;
@@ -216,7 +216,7 @@ namespace Celer{
 	};
 
 	template<class Real>
-	inline void Quaternion<Real>::SetAxis( const Real& x, const Real& y, const Real& z )
+	inline void Quaternion<Real>::setAxis( const Real& x, const Real& y, const Real& z )
 	{
 
 		this->x = x;
@@ -226,13 +226,13 @@ namespace Celer{
 	};
 
 	template<class Real>
-	inline Vector3<Real> Quaternion<Real>::Axis() const
+	inline Vector3<Real> Quaternion<Real>::axis() const
 	{
 		return ( Vector3<Real> (x,y,z) );
 	};
 
 	template<class Real>
-	inline Real Quaternion<Real>::Angle() const
+	inline Real Quaternion<Real>::angle() const
 	{
 		return ( w );
 	}
@@ -288,7 +288,7 @@ namespace Celer{
 	}
 
 	template <class Real>
-	inline Vector3<Real> Quaternion<Real>::Rotate( const Vector3<Real>& v ) const
+	inline Vector3<Real> Quaternion<Real>::rotate( const Vector3<Real>& v ) const
 	{
 	    Quaternion<Real> quat(1.0,v.x, v.y, v.z);
 
@@ -298,7 +298,7 @@ namespace Celer{
 	}
 
 	template <class Real>
-	inline Matrix3x3<Real> Quaternion<Real>::To3x3Matrix( ) const
+	inline Matrix3x3<Real> Quaternion<Real>::to3x3Matrix( ) const
 	{
 		Matrix3x3<Real> rotationMatrix;
 
@@ -331,7 +331,7 @@ namespace Celer{
 	}
 
 	template <class Real>
-	inline void Quaternion<Real>::To3x3Matrix( Matrix3x3<Real>& rotationMatrix ) const
+	inline void Quaternion<Real>::to3x3Matrix( Matrix3x3<Real>& rotationMatrix ) const
 	{
 
 		Real xx = x * x * static_cast<Real> (2.0);
@@ -361,7 +361,7 @@ namespace Celer{
 	}
 
 	template <class Real>
-	inline void Quaternion<Real>::To4x4Matrix( Matrix4x4<Real>& rotationMatrix ) const
+	inline void Quaternion<Real>::to4x4Matrix( Matrix4x4<Real>& rotationMatrix ) const
 	{
 		Real xx = x * x * static_cast<Real> (2.0);
 		Real yy = y * y * static_cast<Real> (2.0);
@@ -395,7 +395,7 @@ namespace Celer{
 	  }
 
 	template <class Real>
-	inline Matrix4x4<Real> Quaternion<Real>::To4x4Matrix() const
+	inline Matrix4x4<Real> Quaternion<Real>::to4x4Matrix() const
 	{
 
 		Matrix4x4<Real> rotationMatrix;
@@ -434,7 +434,7 @@ namespace Celer{
 	  }
 
 	template <class Real>
-	inline void Quaternion<Real>::To4x4Matrix( Real * rotationMatrix ) const
+	inline void Quaternion<Real>::to4x4Matrix( Real * rotationMatrix ) const
 	{
 
 		Real xx = x * x * static_cast<Real> (2.0);
@@ -477,7 +477,7 @@ namespace Celer{
 
 	//----------------------------------------------------------------------------
 	template <class Real>
-	inline void  Quaternion<Real>::FromRotationMatrix( const Matrix4x4<Real>& rotationMatrix )
+	inline void  Quaternion<Real>::fromRotationMatrix( const Matrix4x4<Real>& rotationMatrix )
 	{
 		  const Real onePlusTrace = static_cast<Real> (1.0)  + rotationMatrix[0][0] + rotationMatrix[1][1] + rotationMatrix[2][2];
 
@@ -520,12 +520,12 @@ namespace Celer{
 			  }
 		    }
 
-	 this->Normalize();
+	 this->normalize();
 
 	}
 
 	template <class Real>
-	inline void  Quaternion<Real>::FromAxisAngle( const Vector3<Real> &axis, const Real& degrees )
+	inline void  Quaternion<Real>::fromAxisAngle( const Vector3<Real> &axis, const Real& degrees )
 	{
 	    Real halfTheta = static_cast<Real> (Math::kDeg2Rad * (degrees) * 0.5f);
 
@@ -537,15 +537,15 @@ namespace Celer{
 	    z = axis.z * s;
 	}
 	template <class Real>
-	inline void  Quaternion<Real>::FromHeadPitchRoll( const Real& headDegrees, const Real& pitchDegrees, const Real& rollDegrees)
+	inline void  Quaternion<Real>::fromHeadPitchRoll( const Real& headDegrees, const Real& pitchDegrees, const Real& rollDegrees)
 	{
 	    Matrix4x4<Real> m;
-	    m.FromHeadPitchRoll(headDegrees, pitchDegrees, rollDegrees);
-	    FromRotationMatrix(m);
+	    m.fromHeadPitchRoll(headDegrees, pitchDegrees, rollDegrees);
+	    fromRotationMatrix(m);
 	}
 
 	template <class Real>
-	inline void  Quaternion<Real>::ToAxisAngle( Vector3<Real>& axis, Real& degrees ) const
+	inline void  Quaternion<Real>::toAxisAngle( Vector3<Real>& axis, Real& degrees ) const
 	{
 	    // Converts this quaternion to an axis and an angle.
 
@@ -571,7 +571,7 @@ namespace Celer{
 
 	// Reference: Stan Melax, Game Programming Gems
 	template <class Real>
-	inline void  Quaternion<Real>::ToRotationArc( Vector3<Real> &u, Vector3<Real> &v )
+	inline void  Quaternion<Real>::toRotationArc( Vector3<Real> &u, Vector3<Real> &v )
 	{
 
 		u.Normalize();
@@ -633,20 +633,20 @@ namespace Celer{
 	}
 
 	template <class Real>
-	inline Real Quaternion<Real>::Length() const
+	inline Real Quaternion<Real>::length() const
 	{
 	    return std::sqrt(  x*x +  y*y +  z*z + w*w );
 	}
 
 	template <class Real>
-	inline Real Quaternion<Real>::Norm() const
+	inline Real Quaternion<Real>::norm() const
 	{
 	    return   ( x*x + y*y +  z*z + w*w ) ;
 	}
 
 
 	template <class Real>
-	inline void Quaternion<Real>::Normalize()
+	inline void Quaternion<Real>::normalize()
 	{
 	    Real lLength = sqrt(  x*x +  y*y +  z*z + w*w );
 
@@ -670,7 +670,7 @@ namespace Celer{
 	}
 
 	template <class Real>
-	inline void Quaternion<Real>::Identity()
+	inline void Quaternion<Real>::identity()
 	{
 		this->w = static_cast<Real> (1);
 		this->x = static_cast<Real> (0);
@@ -681,7 +681,7 @@ namespace Celer{
 
 
 	template <class Real>
-	inline Quaternion<Real> Quaternion<Real>::Normalized()
+	inline Quaternion<Real> Quaternion<Real>::normalized()
 	{
 	    Real lLength = sqrt(  x*x +  y*y +  z*z + w*w );
 
@@ -702,7 +702,7 @@ namespace Celer{
 
 
 	template <class Real>
-	inline Quaternion<Real> Quaternion<Real>::Inverse() const
+	inline Quaternion<Real> Quaternion<Real>::inverse() const
 	{
 		Real lNorm =   x*x +  y*y +  z*z + w*w ;
 
@@ -720,7 +720,7 @@ namespace Celer{
 	}
 
 	template <class Real>
-	inline void  Quaternion<Real>::Invert()
+	inline void  Quaternion<Real>::invert()
 	{
 		Real lNorm =   x*x +  y*y +  z*z + w*w ;
 
@@ -745,7 +745,7 @@ namespace Celer{
 	}
 
 	template <class Real>
-	inline Real Quaternion<Real>::Dot ( const Quaternion<Real>& quat ) const
+	inline Real Quaternion<Real>::dot ( const Quaternion<Real>& quat ) const
 	{
 	    Real lScalar = static_cast<Real> (0.0);
 

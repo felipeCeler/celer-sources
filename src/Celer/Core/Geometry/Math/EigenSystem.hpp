@@ -8,7 +8,6 @@
 #include <cmath>
 
 #include <Celer/Core/Geometry/Math/Matrix3x3.hpp>
-#include <Celer/Core/Geometry/Math/Point3.hpp>
 #include <Celer/Core/Geometry/Math/Vector3.hpp>
 #include <Celer/Core/Geometry/Math/Math.hpp>
 
@@ -26,11 +25,11 @@ namespace Celer
 
 	public:
 
-		typedef Celer::Point3<Real>  		Point3;
-		typedef std::list<Point3>					ListPoint3;
+		typedef Celer::Vector3<Real> 		Vector3;
+		typedef std::list<Vector3>					ListPoint3;
 		typedef typename ListPoint3::iterator   	ListPoint3Iterator;
 
-		typedef Celer::Vector3<Real> 		Vector3;
+
 		typedef Celer::Matrix3x3<Real> 	Matrix3x3;
 
 		Real 	  mEigenvalue[3];
@@ -51,7 +50,7 @@ namespace Celer
 			EigenDecomposition();
 		}
 		/*!  */
-		EigenSystem(ListPoint3& pPoint3List, const Point3& pMean)
+		EigenSystem(ListPoint3& pPoint3List, const Vector3& pMean)
 		{
 			CovarianceMatrix (pPoint3List,pMean);
 			EigenDecomposition();
@@ -81,7 +80,7 @@ namespace Celer
 			return (mCurvature);
 		}
 
-		void CovarianceMatrix (ListPoint3& pPoint3List, const Point3& pMean)
+		void CovarianceMatrix (ListPoint3& pPoint3List, const Vector3& pMean)
 		{
 
 			Real correlationXY = static_cast<Real> (0);

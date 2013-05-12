@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cstdlib>
 
-#include <Celer/Core/Geometry/Math/Point3.hpp>
 #include <Celer/Core/Geometry/Math/Vector3.hpp>
 
 namespace Celer
@@ -39,10 +38,6 @@ namespace Celer
 				
 			Color(const float&pRed, const float&pGreen, const float& pBlue, const float& pAlfa)
 				: mRed(pRed), mGreen(pGreen), mBlue(pBlue), mAlfa(pAlfa) {};
-				
-			template < typename C >				
-			Color (const Point3<C>& pPoint )
-				: mRed(pPoint.x), mGreen(pPoint.y), mBlue(pPoint.z), mAlfa(0) {};
 				
 			template < typename C >				
 			Color (const Vector3<C>& pVector )

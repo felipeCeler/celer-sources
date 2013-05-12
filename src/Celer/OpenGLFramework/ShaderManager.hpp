@@ -25,9 +25,12 @@
 #include <Celer/OpenGLFramework/Shader.hpp>
 /// Standard C++ Library	- std::cout and std::string.
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <map>
+
+
 
 // Celer::ShaderManager
 // References:
@@ -54,7 +57,30 @@ namespace Celer
 						GLenum type;
 						GLuint location;
 						GLuint size;
-						GLuint stride;
+						GLuint array_size;
+						GLuint offset;
+				};
+
+				struct UniformBlock
+				{
+						GLuint index;
+						std::vector<std::string> names;
+						std::vector<GLint> offsets;
+						std::vector<GLuint> indices;
+				};
+
+				struct SubRoutine
+				{
+						// LORE SubRoutine belong to a shader stage.
+						//      There is only on uniform location for them.
+						//      One index for each subroutine.
+						//
+						GLenum 		shader_type;
+						GLuint 		index;
+						std::string 	name;
+
+						GLuint 		uniform_location;
+						std::string     uniform_name;
 				};
 
 				GLuint 			id_; ///< Identification
@@ -73,15 +99,27 @@ namespace Celer
 
 			public:
 
-				std::map<std::string, Uniform> uniforms_;
+				std::map<std::string, Uniform> 		uniforms_;
+				std::map<std::string, UniformBlock>     uniform_blocks_;
+				// FIXME <Uniform name, SubRoutine informations>
+				std::map<std::string, std::map <std::string , SubRoutine> > 	subroutines_;
 
 				ShaderManager 	   ( );
 				ShaderManager 	   ( std::string name );
+				GLint    id	   ( );
 
-				void create 	   ( const std::string& vertexShader , const std::string fragmentShader );
+				void create 	   ( const std::string name , const std::string& vertexShader , const std::string& fragmentShader );
+				void create 	   ( const std::string name , const std::string& vertexShader , const std::string& geometryShader , const std::string& fragmentShader );
 
 				void addUniforms ( );
-				void addUniform  ( std::string name , GLenum type , unsigned int size );
+				void addUniform  ( std::string name , GLenum type , GLint size );
+
+				void addSubRoutines ( GLenum shader_type );
+				void addSubRoutine  ( std::string name , GLenum shader_type, GLint index, GLint uniform_location, std::string uniform_name );
+
+				void addUniformBlocks ( );
+				void addUniformBlock ( std::string name, GLint index );
+
 
 				void active   	   ( );
 				void deactive 	   ( );

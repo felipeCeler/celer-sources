@@ -16,6 +16,9 @@ add_subdirectory(Celer/Base)
 ## Core Math Library - Just Vectors, Quaternions and Matrices Classes.
 add_subdirectory(Celer/Core/Geometry/Math)
 
+## Core Physics Library - Just Some Bounding Volume and their usage.
+add_subdirectory(Celer/Core/Physics)
+
 ## Scene Class - Camera, Light and Everything about a Scene.
 add_subdirectory(Celer/Scene)
 

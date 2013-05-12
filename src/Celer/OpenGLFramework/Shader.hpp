@@ -68,6 +68,11 @@ namespace Celer
 			public:
 				FragmentShader ( std::string fileName , std::string description );
 		};
+		class GeometryShader : public Shader
+		{
+			public:
+				GeometryShader ( std::string fileName , std::string description );
+		};
 
 	}
 

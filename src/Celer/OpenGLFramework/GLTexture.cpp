@@ -22,6 +22,8 @@ namespace Celer
 			name_		= std::string("Nothing");
 			bound_ 		= 0;
 			isInitialized_ 	= 0;
+			width_ 		= 0;
+			height_		= 0;
 
 			internalFormat_ = GL_RGBA;
 			format_		= GL_RGBA;
@@ -76,7 +78,7 @@ namespace Celer
 			//assert ( !bound_ );
 			bound_ = 1;
 
-			glBindTexture ( GL_TEXTURE_2D, id_ );
+			glBindTexture ( target_, id_ );
 
 			return 1;
 		}
@@ -92,7 +94,7 @@ namespace Celer
 
 			bound_ = 0;
 
-			glBindTexture ( GL_TEXTURE_2D, 0 );
+			glBindTexture ( target_, 0 );
 
 			return 1;
 		}
@@ -193,10 +195,10 @@ namespace Celer
 
 			this->bind ( );
 			// Set basic parameters
-			glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE );
-			glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE );
-			glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_NEAREST );
-			glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_NEAREST );
+			glTexParameteri ( target_ , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE );
+			glTexParameteri ( target_ , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE );
+			glTexParameteri ( target_ , GL_TEXTURE_MIN_FILTER , GL_NEAREST );
+			glTexParameteri ( target_ , GL_TEXTURE_MAG_FILTER , GL_NEAREST );
 			// Allocate memory
 			glTexImage2D ( target_ , 0 , internalFormat_ , width , height , 0 , format_ , type_ , NULL );
 			this->unbind ( );
@@ -219,6 +221,12 @@ namespace Celer
 		       		       GLenum target	    )
 		{
 
+			internalFormat_ = internalFormat;
+			format_ 	= format;
+			type_ 		= type;
+			target_ 	= target;
+
+
 			// TODO this is just the beginning
 			// Create a texture as attachment
 			if ( id_ != 0 )
@@ -232,10 +240,10 @@ namespace Celer
 
 			this->bind ( );
 			// Set basic parameters
-			glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE );
-			glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE );
-			glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_NEAREST );
-			glTexParameteri ( GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_NEAREST );
+			glTexParameteri ( target_ , GL_TEXTURE_WRAP_S , GL_CLAMP_TO_EDGE );
+			glTexParameteri ( target_ , GL_TEXTURE_WRAP_T , GL_CLAMP_TO_EDGE );
+			glTexParameteri ( target_ , GL_TEXTURE_MIN_FILTER , GL_NEAREST );
+			glTexParameteri ( target_ , GL_TEXTURE_MAG_FILTER , GL_NEAREST );
 			// Allocate memory
 			glTexImage2D ( target , 0 , internalFormat , width , height , 0 , format , type , NULL );
 			this->unbind ( );
