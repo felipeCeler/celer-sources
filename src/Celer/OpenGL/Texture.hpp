@@ -34,7 +34,7 @@ namespace Celer
 	namespace OpenGL
 	{
 
-		class Texture2D : public Celer::NonCopyable
+		class Texture2D
 		{
 			protected:
 

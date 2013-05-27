@@ -22,7 +22,7 @@
 /// Base			- This class can't be copied.
 #include <Celer/Base/Base.hpp>
 /// OpenGL Shaders
-#include <Celer/OpenGLFramework/Shader.hpp>
+#include <Celer/OpenGL/Shader.hpp>
 /// Standard C++ Library	- std::cout and std::string.
 #include <iostream>
 #include <fstream>

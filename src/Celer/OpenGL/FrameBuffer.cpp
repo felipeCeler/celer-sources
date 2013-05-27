@@ -24,6 +24,13 @@ namespace Celer
 			if ( !glewIsSupported ( "GL_EXT_framebuffer_object" ) )
 			{
 				std::cerr << "ERROR" + name_ + ": Support for  GL_EXT_framebuffer_object OpenGL extensions missing." << std::endl;
+			}else
+			{
+				 int max_attachments;
+				 // Get the maximum number of color attachments
+				 glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_attachments);
+
+				 colorAttachtment.resize( max_attachments );
 			}
 
 		}
@@ -48,45 +55,33 @@ namespace Celer
 
 		}
 
-		bool FrameBuffer::create ( const GLuint width , const GLuint height )
+		bool FrameBuffer::create ( const GLuint width , const GLuint height , GLenum internalFormat, GLenum format , GLenum type, GLenum target )
 		{
 			/// XXX: How creat color Attachments and Depth and Stencil Buffer
 			/// XXX: This function needs too much attention !!
 			/// FIXME: hasDepht;hasStencil,hasTexture: How many and so one ...
 
-			if ( depthBuffer_id_ != 0 )
-			{
-				glDeleteRenderbuffersEXT ( 1 , &depthBuffer_id_ );
-				depthBuffer_id_ = 0;
-			}else
-			{
-				glGenRenderbuffersEXT ( 1 , &depthBuffer_id_ );
+			width_  = width;
+			height_ = height;
 
-			}
-			if ( frameBuffer_id_ != 0 )
-			{
-				glDeleteFramebuffersEXT ( 1 , &frameBuffer_id_ );
-				frameBuffer_id_ = 0;
-			}else
-			{
-				glGenFramebuffersEXT ( 1 , &frameBuffer_id_ );
+			glGenFramebuffersEXT(1, &frameBuffer_id_ );
+			glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, frameBuffer_id_ );
 
+
+			for ( int i = 0; i < colorAttachtment.size() ; i++ )
+			{
+				colorAttachtment[i].first 		  = GL_COLOR_ATTACHMENT0 + i;
+				colorAttachtment[i].second.create (width_,height_,internalFormat,format,type,target);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, target, colorAttachtment[i].second.id(), 0);
 			}
 
-			this->width_ 	= width;
-			this->height_ 	= height;
+			// create the depth buffer
+			glGenRenderbuffers( 1, &depthBuffer_id_ );
+			glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer_id_ );
+			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width_ , height_ );
+			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer_id_ );
 
-			// create a depth buffer:
-			glBindRenderbuffer ( GL_RENDERBUFFER , depthBuffer_id_ );
-			glRenderbufferStorage ( GL_RENDERBUFFER , GL_DEPTH_COMPONENT32 , width_ , height_ );
-			glBindRenderbuffer ( GL_RENDERBUFFER , 0 );
-
-			// create fbo and attach render texture and depth texture
-			glBindFramebuffer ( GL_FRAMEBUFFER , frameBuffer_id_ );
-			//glFramebufferTexture2D ( GL_FRAMEBUFFER , GL_COLOR_ATTACHMENT0 , GL_TEXTURE_2D , texture2D_.id ( ) , 0 );
-			glFramebufferRenderbuffer ( GL_FRAMEBUFFER , GL_DEPTH_ATTACHMENT , GL_RENDERBUFFER , depthBuffer_id_ );
-			glBindFramebufferEXT ( GL_FRAMEBUFFER_EXT , 0 );
-
+			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 			return checkFramebufferStatus ( );
 		}
@@ -106,6 +101,7 @@ namespace Celer
 		bool FrameBuffer::checkFramebufferStatus ( )
 		{
 			// check FBO status
+			glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, frameBuffer_id_ );
 			GLenum status = glCheckFramebufferStatusEXT ( GL_FRAMEBUFFER_EXT );
 			switch ( status )
 			{
@@ -145,6 +141,8 @@ namespace Celer
 					std::cout << name_ + " : [ERROR] Unknow error." << std::endl;
 					return false;
 			}
+
+			glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 		}
 
 		bool FrameBuffer::unbind ( )

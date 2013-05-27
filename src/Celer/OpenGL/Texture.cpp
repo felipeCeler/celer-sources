@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <iostream>
 
-#include "GLTexture.hpp"
+#include "Texture.hpp"
 
 // TODO - Assert or Try Catch !!
 

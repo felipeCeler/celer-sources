@@ -22,6 +22,6 @@ add_subdirectory(Celer/Core/Physics)
 ## Scene Class - Camera, Light and Everything about a Scene.
 add_subdirectory(Celer/Scene)
 
-## OpenGL Stuffs
-add_subdirectory(Celer/OpenGLFramework)
+## OpenGL Wrappers
+add_subdirectory(Celer/OpenGL)
 
