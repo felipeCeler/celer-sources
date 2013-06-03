@@ -39,6 +39,45 @@ namespace Celer
 	}
 
 	template < class Real >
+	Matrix4x4<Real>::Matrix4x4 ( Real other00,
+				     Real other01,
+				     Real other02,
+				     Real other03,
+				     Real other10,
+				     Real other11,
+				     Real other12,
+				     Real other13,
+				     Real other20,
+				     Real other21,
+				     Real other22,
+				     Real other23,
+				     Real other30,
+				     Real other31,
+				     Real other32,
+				     Real other33)
+	{
+		m[0].x = static_cast<Real> ( other00 );
+		m[0].y = static_cast<Real> ( other01 );
+		m[0].z = static_cast<Real> ( other02 );
+		m[0].w = static_cast<Real> ( other03 );
+
+		m[1].x = static_cast<Real> ( other10 );
+		m[1].y = static_cast<Real> ( other11 );
+		m[1].z = static_cast<Real> ( other12 );
+		m[1].w = static_cast<Real> ( other13 );
+
+		m[2].x = static_cast<Real> ( other20 );
+		m[2].y = static_cast<Real> ( other21 );
+		m[2].z = static_cast<Real> ( other22 );
+		m[2].w = static_cast<Real> ( other23 );
+
+		m[3].x = static_cast<Real> ( other30 );
+		m[3].y = static_cast<Real> ( other31 );
+		m[3].z = static_cast<Real> ( other32 );
+		m[3].w = static_cast<Real> ( other33 );
+	}
+
+	template < class Real >
 	Matrix4x4<Real>::Matrix4x4 ( const Matrix4x4<Real>& other )
 	{
 		m[0].x = other[0].x;
