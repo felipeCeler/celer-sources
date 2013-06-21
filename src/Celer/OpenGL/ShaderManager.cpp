@@ -115,7 +115,7 @@ namespace Celer
 			}
 
 		}
-		/// TODO: Not Create. It's like requesting resources!
+		/// FIXME: Not Create. It's like requesting resources!
 		void ShaderManager::create ( const std::string name, const std::string& vertexShader , const std::string& fragmentShader )
 		{
 
@@ -178,8 +178,9 @@ namespace Celer
 			id_ = glCreateProgram();
 
 			GLuint vertexID   = loadShaderFromFile( GL_VERTEX_SHADER,vertexShader );
-			GLuint fragmnetID = loadShaderFromFile( GL_FRAGMENT_SHADER,fragmentShader );
 			GLuint geometryID = loadShaderFromFile( GL_GEOMETRY_SHADER,geometryShader );
+			GLuint fragmnetID = loadShaderFromFile( GL_FRAGMENT_SHADER,fragmentShader );
+
 
 			glAttachShader(id_, vertexID);
 			glAttachShader(id_, fragmnetID);
