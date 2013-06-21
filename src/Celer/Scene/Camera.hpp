@@ -670,6 +670,7 @@ namespace Celer
 	void Camera<Real>::reset ( )
 	{
 		position_ = initalPosition_;
+		orientation_.identity ( );
 
 	}
 
