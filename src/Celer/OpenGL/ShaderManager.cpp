@@ -151,6 +151,7 @@ namespace Celer
 			{
 				std::cout <<  name_+" Link program. Log follows:" << std::endl << infoLog;
 				addUniforms();
+				addUniformBlocks();
 				addSubRoutines (GL_VERTEX_SHADER);
 				addSubRoutines (GL_GEOMETRY_SHADER);
 				addSubRoutines (GL_FRAGMENT_SHADER);
@@ -206,10 +207,10 @@ namespace Celer
 			{
 				std::cout <<  name_+" Link program. Log follows:" << std::endl << infoLog;
 				addUniforms();
+				addUniformBlocks();
 				addSubRoutines(GL_VERTEX_SHADER);
 				addSubRoutines(GL_GEOMETRY_SHADER);
 				addSubRoutines(GL_FRAGMENT_SHADER);
-				addUniformBlocks();
 
 			}
 
@@ -310,9 +311,9 @@ namespace Celer
 			GLint numUniforms = 0;
 			GLsizei actualLen;
 			glGetProgramInterfaceiv ( id_ , GL_UNIFORM , GL_ACTIVE_RESOURCES , &numUniforms );
-			int size_of_properties = 5;
-			const GLenum properties[] =
-			{ GL_BLOCK_INDEX, GL_NAME_LENGTH, GL_TYPE, GL_ARRAY_STRIDE, GL_LOCATION };
+			const int size_of_properties = 7;
+			const GLenum properties[size_of_properties] =
+			{ GL_BLOCK_INDEX, GL_NAME_LENGTH, GL_TYPE, GL_LOCATION, GL_ARRAY_SIZE, GL_ARRAY_STRIDE, GL_OFFSET};
 
 			for ( int unif = 0; unif < numUniforms; ++unif )
 			{
@@ -336,18 +337,20 @@ namespace Celer
 
 				name.resize( actualLen );
 
-				addUniform ( name , values[2] , values[3] , values[4] );
+				addUniform ( name , values[2] , values[3] , values[4] , values[5] , values[6]);
 			}
 
 		}
 
-		void ShaderManager::addUniform ( std::string name , GLenum type , GLint size, GLuint location )
+		void ShaderManager::addUniform ( std::string name , GLenum type , GLint location, GLint array_size , GLint array_stride, GLint offset )
 		{
 
 			Uniform u;
 			u.type = type;
-			u.size = size;
 			u.location = location;
+			u.array_size = array_size;
+			u.array_stride = array_stride;
+			u.offset = offset;
 			uniforms_[name] = u;
 
 		}
@@ -356,29 +359,30 @@ namespace Celer
 		{
 
 			// @see - http://www.opengl.org/wiki/Program_Introspection#Naming
-
 			GLint number_of_blocks = 0;
 
 			glGetProgramInterfaceiv ( id_ , GL_UNIFORM_BLOCK , GL_ACTIVE_RESOURCES , &number_of_blocks );
 
 			// GL_NUM_ACTIVE_VARIABLES, the number of active variables associated with an active uniform block.
-			const GLenum block_properties[2] =
+			const int size_of_uniform_block_properties = 2;
+			const GLenum block_properties[size_of_uniform_block_properties] =
 			{ GL_NUM_ACTIVE_VARIABLES , GL_NAME_LENGTH };
 
-			const GLenum activeUnifProp[1] = {GL_ACTIVE_VARIABLES};
+			const GLenum active_unifom_variales[1] =
+			{GL_ACTIVE_VARIABLES};
 
-			int size_of_properties = 5;
-			const GLenum uniform_properties[] =
-			{ GL_BLOCK_INDEX, GL_NAME_LENGTH, GL_TYPE, GL_ARRAY_STRIDE, GL_LOCATION };
+			const int size_of_uniform_properties = 7;
+			const GLenum uniform_properties[size_of_uniform_properties] =
+			{ GL_BLOCK_INDEX, GL_NAME_LENGTH, GL_TYPE, GL_LOCATION, GL_ARRAY_SIZE, GL_ARRAY_STRIDE, GL_OFFSET};
 
 			GLsizei actualLen;
 
 			for ( int block_index = 0; block_index < number_of_blocks; ++block_index )
 			{
 
-				GLint uniform_block_values[2];
+				GLint uniform_block_values[size_of_uniform_block_properties];
 
-				glGetProgramResourceiv(id_, GL_UNIFORM_BLOCK, block_index, 2, block_properties, 2, NULL, uniform_block_values);
+				glGetProgramResourceiv(id_, GL_UNIFORM_BLOCK, block_index, size_of_uniform_block_properties, block_properties, size_of_uniform_block_properties , NULL, uniform_block_values);
 
 				std::string uniform_block_name;
 				// @see - "+ 1" to make room for the terminating NUL for the C API
@@ -392,48 +396,57 @@ namespace Celer
 				if (  uniform_block_values[0] == 0 )
 					continue;
 
-				 std::vector<GLint> blockUnifs(uniform_block_values[0]);
-				 glGetProgramResourceiv(id_, GL_UNIFORM_BLOCK, block_index, 1, activeUnifProp , uniform_block_values[0], 0, &blockUnifs[0]);
+				std::vector<GLint> uniform_block_variables(uniform_block_values[0]);
+				glGetProgramResourceiv(id_, GL_UNIFORM_BLOCK, block_index, 1, active_unifom_variales , uniform_block_values[0], 0, &uniform_block_variables[0]);
 
-				for ( int unif = 0; unif < blockUnifs.size(); ++unif )
+				for ( std::size_t uniform_index = 0; uniform_index < uniform_block_variables.size(); ++uniform_index )
 				{
-					GLint values[size_of_properties];
-					glGetProgramResourceiv ( id_ , GL_UNIFORM , blockUnifs[unif] , size_of_properties , uniform_properties , size_of_properties , 0 , values );
+					GLint values[size_of_uniform_properties];
+					glGetProgramResourceiv ( id_ , GL_UNIFORM ,uniform_block_variables[uniform_index] , size_of_uniform_properties , uniform_properties , size_of_uniform_properties , 0 , values );
 
-					//Skip any uniforms that are in a block.
-					if ( values[0] != -1 )
+					if (values[3] != -1)
 						continue;
-
 					//Get the name. Must use a std::vector rather than a std::string for C++03 standards issues.
 					//C++11 would let you use a std::string directly.
 					std::string name;
-
-
 					// @see - "+ 1" to make room for the terminating NUL for the C API
 					// 	   http://stackoverflow.com/a/12742517/1204876
 					name.resize( values[1] + 1 );
 
-					glGetProgramResourceName ( id_ , GL_UNIFORM , blockUnifs[unif] , name.size ( ) , &actualLen , &name[0] );
+					glGetProgramResourceName ( id_ , GL_UNIFORM , uniform_block_variables[uniform_index] , name.size ( ) , &actualLen , &name[0] );
 
 					name.resize( actualLen );
 
-					addUniform ( name , values[2] , values[3] , values[4] );
-				}
+					Uniform u;
 
+					u.type 	 	= values[2];
+					u.location 	= values[3];
+					u.array_size	= values[4];
+					u.array_stride  = values[5];
+					u.offset	= values[6];
+
+					addUniformBlock( name, block_index, u);
+
+				}
 
 			}
 
-
 		}
 
-		void ShaderManager::addUniformBlock ( std::string name, GLint index )
+		void ShaderManager::addUniformBlock ( std::string name, GLint index , Uniform uniform )
 		{
 			UniformBlock u;
 
+			u.name = name;
 			u.index = index;
 
-			uniform_blocks_[name] = u;
+			u.uniform.type = uniform.type;
+			u.uniform.location = uniform.location;
+			u.uniform.array_size = uniform.array_size;
+			u.uniform.array_stride = uniform.array_stride;
+			u.uniform.offset = uniform.offset;
 
+			uniform_blocks_[u.name] = u;
 
 		}
 

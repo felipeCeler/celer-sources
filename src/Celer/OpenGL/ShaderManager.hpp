@@ -55,17 +55,21 @@ namespace Celer
 				struct Uniform
 				{
 						GLenum type;
-						GLuint location;
-						GLuint size;
-						GLuint array_size;
-						GLuint offset;
+						GLint location;
+						GLint array_size;
+						GLint array_stride;
+						GLint offset;
 				};
 
+				/// http://www.opengl.org/wiki/Interface_Block_(GLSL)
+				/// If you are using CelerGL, make sure to set translate the matrix after upload to GPU
+				/// The way that uniform block carrier data is complex.
+				/// This seems to work with a small blocks definition.
 				struct UniformBlock
 				{
 						std::string 	     name;
 						GLuint 		     index;
-						std::vector<Uniform> uniforms;
+						Uniform uniform;
 				};
 
 				struct SubRoutine
@@ -111,13 +115,13 @@ namespace Celer
 				void create 	   ( const std::string name , const std::string& vertexShader , const std::string& geometryShader , const std::string& fragmentShader );
 
 				void addUniforms ( );
-				void addUniform ( std::string name , GLenum type , GLint size, GLuint location );
+				void addUniform ( std::string name , GLenum type , GLint location, GLint array_size , GLint array_stride, GLint offset );
 
 				void addSubRoutines ( GLenum shader_type );
 				void addSubRoutine  ( std::string name , GLenum shader_type, GLint index, GLint uniform_location, std::string uniform_name );
 
 				void addUniformBlocks ( );
-				void addUniformBlock ( std::string name, GLint index );
+				void addUniformBlock ( std::string name, GLint index, Uniform uniform );
 
 
 				void active   	   ( );
