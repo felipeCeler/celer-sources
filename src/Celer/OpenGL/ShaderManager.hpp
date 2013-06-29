@@ -18,7 +18,7 @@
 #define SHADERMANAGER_HPP_
 
 /// OpenGL Extensions 		- Need an OpenGL context to use this class.
-#include "OpenGLContext.hpp"
+#include <Celer/OpenGL/OpenGLContext.hpp>
 /// Base			- This class can't be copied.
 #include <Celer/Base/Base.hpp>
 /// OpenGL Shaders
@@ -63,10 +63,9 @@ namespace Celer
 
 				struct UniformBlock
 				{
-						GLuint index;
-						std::vector<std::string> names;
-						std::vector<GLint> offsets;
-						std::vector<GLuint> indices;
+						std::string 	     name;
+						GLuint 		     index;
+						std::vector<Uniform> uniforms;
 				};
 
 				struct SubRoutine
@@ -112,7 +111,7 @@ namespace Celer
 				void create 	   ( const std::string name , const std::string& vertexShader , const std::string& geometryShader , const std::string& fragmentShader );
 
 				void addUniforms ( );
-				void addUniform  ( std::string name , GLenum type , GLint size );
+				void addUniform ( std::string name , GLenum type , GLint size, GLuint location );
 
 				void addSubRoutines ( GLenum shader_type );
 				void addSubRoutine  ( std::string name , GLenum shader_type, GLint index, GLint uniform_location, std::string uniform_name );

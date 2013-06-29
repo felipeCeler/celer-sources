@@ -20,6 +20,7 @@ namespace Celer
 
 		ShaderManager::ShaderManager ( )
 		{
+
 			// TODO Auto-generated constructor stub
 			id_ 		= 0;
 			isLinked_ 	= false;
@@ -161,7 +162,7 @@ namespace Celer
 			for ( std::map<std::string, Uniform>::iterator it = uniforms_.begin(); it != uniforms_.end(); it++)
 			{
 				std::cout <<  "Name " << it->first << std::endl;
-				std::cout <<  "Name " << it->second.type << std::endl;
+				std::cout <<  "Name " << it->second.location << std::endl;
 			}
 
 			delete[] infoLog;
@@ -208,6 +209,7 @@ namespace Celer
 				addSubRoutines(GL_VERTEX_SHADER);
 				addSubRoutines(GL_GEOMETRY_SHADER);
 				addSubRoutines(GL_FRAGMENT_SHADER);
+				addUniformBlocks();
 
 			}
 
@@ -216,7 +218,7 @@ namespace Celer
 			for ( std::map<std::string, Uniform>::iterator it = uniforms_.begin(); it != uniforms_.end(); it++)
 			{
 				std::cout <<  "Name " << it->first << std::endl;
-				std::cout <<  "Name " << it->second.type << std::endl;
+				std::cout <<  "Name " << it->second.location << std::endl;
 			}
 
 			delete[] infoLog;
@@ -303,48 +305,49 @@ namespace Celer
 		void ShaderManager::addUniforms ( )
 		{
 
-			int count;
+			// @see - http://www.opengl.org/wiki/Program_Introspection#Naming
+
+			GLint numUniforms = 0;
 			GLsizei actualLen;
-			//GLint uniArrayStride;
+			glGetProgramInterfaceiv ( id_ , GL_UNIFORM , GL_ACTIVE_RESOURCES , &numUniforms );
+			int size_of_properties = 5;
+			const GLenum properties[] =
+			{ GL_BLOCK_INDEX, GL_NAME_LENGTH, GL_TYPE, GL_ARRAY_STRIDE, GL_LOCATION };
 
-			GLenum type;
-			GLint loc;
-			GLint size;
-			std::string name;
-
-			int maxUniLength;
-			glGetProgramiv ( id_ , GL_ACTIVE_UNIFORMS , &count );
-
-			std::cout <<  count  <<  "Active uniforms " << std::endl;
-
-			glGetProgramiv ( id_ , GL_ACTIVE_UNIFORM_MAX_LENGTH , &maxUniLength );
-
-			name.resize ( maxUniLength );
-
-
-			for ( int i = 0; i < count; ++i )
+			for ( int unif = 0; unif < numUniforms; ++unif )
 			{
+				GLint values[size_of_properties];
+				glGetProgramResourceiv ( id_ , GL_UNIFORM , unif , size_of_properties , properties , size_of_properties , 0 , values );
+
+				//Skip any uniforms that are in a block.
+				if ( values[0] != -1 )
+					continue;
+
+				//Get the name. Must use a std::vector rather than a std::string for C++03 standards issues.
+				//C++11 would let you use a std::string directly.
+				std::string name;
 
 
-				glGetActiveUniform ( id_ , i , maxUniLength , &actualLen , &size , &type , &name[0] );
-				// -1 indicates that is not an active uniform, although it may be present in a
-				// uniform block
-				loc = glGetUniformLocation ( id_ , &name[0] );
-				//glGetActiveUniformsiv ( id_ , 1 , &loc , GL_UNIFORM_ARRAY_STRIDE , &uniArrayStride );
-				if ( loc != -1 )
-					addUniform ( std::string(name.begin(),name.begin()+actualLen) , type , size );
+				// @see - "+ 1" to make room for the terminating NUL for the C API
+				// 	   http://stackoverflow.com/a/12742517/1204876
+				name.resize( values[1] + 1 );
 
+				glGetProgramResourceName ( id_ , GL_UNIFORM , unif , name.size ( ) , &actualLen , &name[0] );
+
+				name.resize( actualLen );
+
+				addUniform ( name , values[2] , values[3] , values[4] );
 			}
 
 		}
 
-		void ShaderManager::addUniform ( std::string name , GLenum type , GLint size )
+		void ShaderManager::addUniform ( std::string name , GLenum type , GLint size, GLuint location )
 		{
 
 			Uniform u;
 			u.type = type;
-			u.location = glGetUniformLocation ( id_ , name.c_str ( ) );
 			u.size = size;
+			u.location = location;
 			uniforms_[name] = u;
 
 		}
@@ -352,42 +355,72 @@ namespace Celer
 		void ShaderManager::addUniformBlocks ( )
 		{
 
+			// @see - http://www.opengl.org/wiki/Program_Introspection#Naming
+
 			GLint number_of_blocks = 0;
 
 			glGetProgramInterfaceiv ( id_ , GL_UNIFORM_BLOCK , GL_ACTIVE_RESOURCES , &number_of_blocks );
 
-			const GLenum block_properties[1] =
-			{ GL_NUM_ACTIVE_VARIABLES };
-			const GLenum active_uniform_properties[1] =
-			{ GL_ACTIVE_VARIABLES };
-			const GLenum uniform_properties[3] =
-			{ GL_NAME_LENGTH, GL_TYPE, GL_LOCATION };
+			// GL_NUM_ACTIVE_VARIABLES, the number of active variables associated with an active uniform block.
+			const GLenum block_properties[2] =
+			{ GL_NUM_ACTIVE_VARIABLES , GL_NAME_LENGTH };
+
+			const GLenum activeUnifProp[1] = {GL_ACTIVE_VARIABLES};
+
+			int size_of_properties = 5;
+			const GLenum uniform_properties[] =
+			{ GL_BLOCK_INDEX, GL_NAME_LENGTH, GL_TYPE, GL_ARRAY_STRIDE, GL_LOCATION };
+
+			GLsizei actualLen;
 
 			for ( int block_index = 0; block_index < number_of_blocks; ++block_index )
 			{
 
-				GLint number_of_active_uniforms = 0;
+				GLint uniform_block_values[2];
 
-				glGetProgramResourceiv ( id_ , GL_UNIFORM_BLOCK , block_index , 1 , block_properties , 1 , 0 , &number_of_active_uniforms );
+				glGetProgramResourceiv(id_, GL_UNIFORM_BLOCK, block_index, 2, block_properties, 2, NULL, uniform_block_values);
 
-				if ( !number_of_active_uniforms )
+				std::string uniform_block_name;
+				// @see - "+ 1" to make room for the terminating NUL for the C API
+				// 	   http://stackoverflow.com/a/12742517/1204876
+				uniform_block_name.resize( uniform_block_values[1] + 1 );
+
+				glGetProgramResourceName ( id_ , GL_UNIFORM_BLOCK , block_index , uniform_block_name.size ( ) , &actualLen , &uniform_block_name[0] );
+
+				uniform_block_name.resize( actualLen );
+
+				if (  uniform_block_values[0] == 0 )
 					continue;
 
-				std::vector<GLint> block_uniforms ( number_of_active_uniforms );
+				 std::vector<GLint> blockUnifs(uniform_block_values[0]);
+				 glGetProgramResourceiv(id_, GL_UNIFORM_BLOCK, block_index, 1, activeUnifProp , uniform_block_values[0], 0, &blockUnifs[0]);
 
-				glGetProgramResourceiv ( id_ , GL_UNIFORM_BLOCK , block_index , 1 , active_uniform_properties , number_of_active_uniforms , 0 , &block_uniforms[0] );
-
-				for ( int uniform_index = 0; uniform_index < number_of_active_uniforms; ++uniform_index )
+				for ( int unif = 0; unif < blockUnifs.size(); ++unif )
 				{
-					GLint values[3];
-					glGetProgramResourceiv ( id_ , GL_UNIFORM , uniform_index , 3 , uniform_properties , 4 , 0 , values );
+					GLint values[size_of_properties];
+					glGetProgramResourceiv ( id_ , GL_UNIFORM , blockUnifs[unif] , size_of_properties , uniform_properties , size_of_properties , 0 , values );
+
+					//Skip any uniforms that are in a block.
+					if ( values[0] != -1 )
+						continue;
 
 					//Get the name. Must use a std::vector rather than a std::string for C++03 standards issues.
 					//C++11 would let you use a std::string directly.
-					std::vector<char> nameData ( values[0] );
-					glGetProgramResourceName ( id_ , GL_UNIFORM , uniform_index , nameData.size ( ) , NULL , &nameData[0] );
-					std::string name ( nameData.begin ( ) , nameData.end ( ) - 1 );
+					std::string name;
+
+
+					// @see - "+ 1" to make room for the terminating NUL for the C API
+					// 	   http://stackoverflow.com/a/12742517/1204876
+					name.resize( values[1] + 1 );
+
+					glGetProgramResourceName ( id_ , GL_UNIFORM , blockUnifs[unif] , name.size ( ) , &actualLen , &name[0] );
+
+					name.resize( actualLen );
+
+					addUniform ( name , values[2] , values[3] , values[4] );
 				}
+
+
 			}
 
 
