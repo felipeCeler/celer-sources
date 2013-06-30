@@ -361,6 +361,7 @@ namespace Celer
 			// @see - http://www.opengl.org/wiki/Program_Introspection#Naming
 			GLint number_of_blocks = 0;
 
+			/// How many uniform Blocks in the program
 			glGetProgramInterfaceiv ( id_ , GL_UNIFORM_BLOCK , GL_ACTIVE_RESOURCES , &number_of_blocks );
 
 			// GL_NUM_ACTIVE_VARIABLES, the number of active variables associated with an active uniform block.
@@ -377,11 +378,13 @@ namespace Celer
 
 			GLsizei actualLen;
 
+			/// For each uniform block retrieve its informations
 			for ( int block_index = 0; block_index < number_of_blocks; ++block_index )
 			{
 
 				GLint uniform_block_values[size_of_uniform_block_properties];
 
+				/// How many uniform blocks are activated.
 				glGetProgramResourceiv(id_, GL_UNIFORM_BLOCK, block_index, size_of_uniform_block_properties, block_properties, size_of_uniform_block_properties , NULL, uniform_block_values);
 
 				std::string uniform_block_name;
@@ -389,6 +392,7 @@ namespace Celer
 				// 	   http://stackoverflow.com/a/12742517/1204876
 				uniform_block_name.resize( uniform_block_values[1] + 1 );
 
+				/// Its name
 				glGetProgramResourceName ( id_ , GL_UNIFORM_BLOCK , block_index , uniform_block_name.size ( ) , &actualLen , &uniform_block_name[0] );
 
 				uniform_block_name.resize( actualLen );
@@ -397,8 +401,12 @@ namespace Celer
 					continue;
 
 				std::vector<GLint> uniform_block_variables(uniform_block_values[0]);
+
+				/// Indices for each uniform inside the uniform block
 				glGetProgramResourceiv(id_, GL_UNIFORM_BLOCK, block_index, 1, active_unifom_variales , uniform_block_values[0], 0, &uniform_block_variables[0]);
 
+
+				/// for each uniform, do the same as addUniform() function.
 				for ( std::size_t uniform_index = 0; uniform_index < uniform_block_variables.size(); ++uniform_index )
 				{
 					GLint values[size_of_uniform_properties];
