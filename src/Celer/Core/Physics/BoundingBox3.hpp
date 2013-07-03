@@ -50,7 +50,7 @@ namespace Celer
 
 			BoundingBox3 ( const BoundingBox3<Real>& box )
 			{
-				this->min_ = Celer::Vector3<Real> ( box.min ( ) );
+				this->min_ = Celer::Vector3<Real> ( box.box_min ( ) );
 				this->max_ = Celer::Vector3<Real> ( box.box_max ( ) );
 			}
 
