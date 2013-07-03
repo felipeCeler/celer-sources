@@ -51,7 +51,7 @@ namespace Celer
 			BoundingBox3 ( const BoundingBox3<Real>& box )
 			{
 				this->min_ = Celer::Vector3<Real> ( box.min ( ) );
-				this->max_ = Celer::Vector3<Real> ( box.max ( ) );
+				this->max_ = Celer::Vector3<Real> ( box.box_max ( ) );
 			}
 
 			BoundingBox3 ( const Celer::Vector3<Real>& point_min , const Celer::Vector3<Real>& point_max )
@@ -202,19 +202,19 @@ namespace Celer
 				return Celer::Vector3<Real> ( (max_ + min_) * static_cast<Real>( 0.5 ) );
 			}
 
-			inline const Celer::Vector3<Real>& min ( ) const
+			inline const Celer::Vector3<Real>& box_min ( ) const
 			{
 				return ( this->min_ );
 			}
 
-			inline const Celer::Vector3<Real>& max ( ) const
+			inline const Celer::Vector3<Real>& box_max ( ) const
 			{
 				return ( this->max_ );
 			}
 
 			inline bool operator== ( const BoundingBox3<Real>& box ) const
 			{
-				return ( min ( ) == box.min ( ) and max ( ) == box.max ( ) );
+				return ( box_min ( ) == box.box_min ( ) and box_max ( ) == box.box_max ( ) );
 			}
 
 			inline bool operator!= ( const BoundingBox3<Real>& box ) const
@@ -224,20 +224,20 @@ namespace Celer
 
 			inline BoundingBox3<Real>& operator= ( const BoundingBox3<Real>& box )
 			{
-				this->min_ = box.min ( );
-				this->max_ = box.max ( );
+				this->min_ = box.box_min ( );
+				this->max_ = box.box_max ( );
 
 				return ( *this );
 			}
 
 			inline BoundingBox3<Real> operator+ ( const BoundingBox3<Real>& box ) const
 			{
-				return BoundingBox3<Real> (  std::min ( min_.x , box.min ( ).x ) ,
-							     std::min ( min_.y , box.min ( ).y ) ,
-							     std::min ( min_.z , box.min ( ).z ) ,
-							     std::max ( max_.x , box.max ( ).x ) ,
-							     std::max ( max_.y , box.max ( ).y ) ,
-							     std::max ( max_.z , box.max ( ).z ) );
+				return BoundingBox3<Real> (  std::min ( min_.x , box.box_min ( ).x ) ,
+							     std::min ( min_.y , box.box_min ( ).y ) ,
+							     std::min ( min_.z , box.box_min ( ).z ) ,
+							     std::max ( max_.x , box.box_max ( ).x ) ,
+							     std::max ( max_.y , box.box_max ( ).y ) ,
+							     std::max ( max_.z , box.box_max ( ).z ) );
 			}
 
 			inline BoundingBox3<Real> operator+ ( const Celer::Vector3<Real>& new_point ) const
@@ -259,9 +259,11 @@ namespace Celer
 
 			bool intersect ( const Celer::BoundingBox3<Real>& box ) const
 			{
-				return ( ( box.max( ).x > this->min_.x ) and ( box.min( ).x < this->max_.x ) and
-		                         ( box.max( ).y > this->min_.y ) and ( box.min( ).y < this->max_.y ) and
-		                         ( box.max( ).z > this->min_.z ) and ( box.min( ).z < this->max_.z ) );
+
+				
+				return ( ( box.box_max( ).x > this->min_.x ) && ( box.box_min( ).x < this->max_.x ) &&
+		                 ( box.box_max( ).y > this->min_.y ) && ( box.box_min( ).y < this->max_.y ) &&
+		                 ( box.box_max( ).z > this->min_.z ) && ( box.box_min( ).z < this->max_.z ) );
 			}
 
 

@@ -1,10 +1,6 @@
 #ifndef LAL_CAMERA_HPP_
 #define LAL_CAMERA_HPP_
 
-#ifdef _WIN32 // _WIN32 is defined by many compilers available for the Windows operating system, but not by others.
-#include <windows.h>
-#endif
-
 #include <iostream>
 
 #include <Celer/Core/Geometry/Math/Matrix4x4.hpp>
