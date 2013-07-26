@@ -250,6 +250,16 @@ namespace Celer
 							     std::max ( max_.z , new_point.z ) );
 			}
 
+			inline BoundingBox3<Real> operator+ ( const Celer::Vector4<Real>& new_point ) const
+			{
+				return BoundingBox3<Real> (  std::min ( min_.x , new_point.x ) ,
+							     std::min ( min_.y , new_point.y ) ,
+							     std::min ( min_.z , new_point.z ) ,
+							     std::max ( max_.x , new_point.x ) ,
+							     std::max ( max_.y , new_point.y ) ,
+							     std::max ( max_.z , new_point.z ) );
+			}
+
 			bool intersect ( const Celer::Vector3<Real>& p ) const
 			{
 				return ( ( p.x ( ) >= this->min_.x ) and ( p.x ( ) < this->max_.x ) and
