@@ -1,17 +1,25 @@
-/*
- * Base.hpp
- *
- *  Created on: Sep 21, 2012
- *      Author: fmc
- */
-
-
 #ifndef CELER_NONCOPYABLE_H
 #define CELER_NONCOPYABLE_H
 
+//- Celer/Base/Base.hpp - Base.hpp.hpp Module definition --------------------//
+//- Celer Graphics
+//  Copyrights (c) 2008-2013 - Felipe de Carvalho
+//
+//                     The Celer Base Module
+//
+// This file is distributed under GNU General Public License as published by
+// the Free Software Foundation. See LICENSE.TXT for details.
+//
+// @file
+// @created on: Sep 21, 2012
+// @version   : 0.1.0 Initial Release
+// @brief This file contains the declaration of the NonCopyable class when
+//        inherited deny the class to be copied.
+//
+//---------------------------------------------------------------------------//
+
 namespace Celer
 {
-
 	/**
 	 * Motivation:
 	 *
@@ -51,9 +59,9 @@ namespace Celer
 			}
 			~NonCopyable ( )
 			{
-			} /// Protected non-virtual destructor
+			}
 		private:
-			NonCopyable ( const NonCopyable & );
+			NonCopyable              ( const NonCopyable & );
 			NonCopyable & operator = ( const NonCopyable & );
 	};
 }

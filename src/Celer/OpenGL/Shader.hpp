@@ -1,80 +1,83 @@
-/*
- * Shader.hpp
- *
- *  Created on: Sep 23, 2012
- *      Author: fmc
- */
-
-
 #ifndef SHADER_HPP_
 #define SHADER_HPP_
 
-/// OpenGL Extensions 		- Need a OpenGL context to use this class.
+//- Celer/OpenGL/Shader.hpp - Shader Module definition ----------------------//
+//- Celer Graphics
+//  Copyrights (c) 2008-2013 - Felipe de Carvalho
+//
+//                     The Celer OpenGL Framework
+//
+// This file is distributed under GNU General Public License as published by
+// the Free Software Foundation. See LICENSE.TXT for details.
+//
+// @file
+// @created on: Sep 23, 2012
+// @version   : 0.1.0 Initial Release
+// @brief This file contains the declaration of the Shader class which provides
+//        a wrapper to handle GLSL shader programs.
+//
+// TODO: C++ Class Inheritance Concepts:
+//	 Virtual functions, public inheritance ...
+//---------------------------------------------------------------------------//
+
+
+/// OpenGL Extensions 		- Need an OpenGL Context to use this class.
 #include "OpenGLContext.hpp"
 /// Base			- This class can't be copied.
-#include <Celer/Base/Base.hpp>
+#include "Celer/Base/Base.hpp"
 /// Standard C++ Library        - Show text and type String
 #include <iostream> ///- std::cout
 #include <string>   ///- std::string
 
 
-// Celer::Shader
-// References:
-// - dpix
-// - G3D Engine
-// - libCinder
-// - Very Simple Library - from http://www.lighthouse3d.com/very-simple-libs
-//____________________________________________________________________________
-// TODO: Basic
-// TODO: C++ Class Inheritance Concepts: Virtual functions, public inheritance, using Namespace::Class
 
 namespace Celer
 {
 
-	namespace OpenGL
-	{
+        namespace OpenGL
+        {
 
-		class Shader
-		{
-			private:
-				GLenum			shaderType_;    ///< VERTEX, GEOMETRY or FRAGMENT shader.
-				std::string 		fileName_;	///< Something.glsl
-				std::string 		description_;	///< Something like that ... Why I'm using this shader ?
+                class Shader
+                {
+                        private:
+                                GLenum			shaderType_;    ///< VERTEX, GEOMETRY or FRAGMENT shader.
+                                std::string 		fileName_;	///< Something.glsl
+                                std::string 		description_;	///< Something like ... Phong Lighting Model ?
 
-			public:
+                        public:
 
-			 	Shader&     operator= 			( const Shader & );
+                                Shader&     operator= 			( const Shader & );
 
-					    Shader 			( GLenum      shadertype,
-					           			  std::string fileName,
-					           			  std::string description );
+                                Shader 			( GLenum      shadertype,
+                                       			  std::string fileName,
+                                       			  std::string description );
 
-				std::string showShaderType 		( ) const;
-				GLenum 	    shaderType 		( ) const;
-				std::string fileName 			( ) const;
-				std::string description 		( ) const;
-				void        showShaderInformation	( ) const;
+                                std::string showShaderType 		( ) const;
+                                GLenum 	    shaderType 			( ) const;
+                                std::string fileName 			( ) const;
+                                std::string description 		( ) const;
+                                void        showShaderInformation	( ) const;
 
-				virtual ~Shader ( );
-		};
+                                virtual ~Shader ( );
+                };
 
-		class VertexShader : public Shader
-		{
-			public:
-				VertexShader (std::string fileName, std::string description );
-		};
-		class FragmentShader : public Shader
-		{
-			public:
-				FragmentShader ( std::string fileName , std::string description );
-		};
-		class GeometryShader : public Shader
-		{
-			public:
-				GeometryShader ( std::string fileName , std::string description );
-		};
+                class VertexShader : public Shader
+                {
+                        public:
+                                VertexShader (std::string fileName, std::string description );
+                };
+                class FragmentShader : public Shader
+                {
+                        public:
+                                FragmentShader ( std::string fileName , std::string description );
+                };
+                class GeometryShader : public Shader
+                {
+                        public:
+                                GeometryShader ( std::string fileName , std::string description );
+                };
 
-	}
+        }
 
 }
 

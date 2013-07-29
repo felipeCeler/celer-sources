@@ -1,10 +1,3 @@
-/*
- * Exception.cpp
- *
- *  Created on: Mar 23, 2012
- *      Author: felipe
- */
-
 #include "Exception.hpp"
 
 namespace Celer
@@ -13,8 +6,7 @@ namespace Celer
 	{
 
 		Exception::Exception ( const std::string& message ) throw ( )
-		{
-			// TODO Auto-generated constructor stub
+		{			
 			message_ = message;
 		}
 
@@ -25,7 +17,6 @@ namespace Celer
 
 		Exception::~Exception ( ) throw ( )
 		{
-			// TODO Auto-generated destructor stub
 		}
 
 		const char* Exception::what ( ) const throw ( )

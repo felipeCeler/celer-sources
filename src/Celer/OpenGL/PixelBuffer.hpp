@@ -1,12 +1,22 @@
-/*
- * PixelBuffer.hpp
- *
- *  Created on: Mar 5, 2012
- *      Author: felipe
- */
-
 #ifndef PIXELBUFFER_HPP_
 #define PIXELBUFFER_HPP_
+
+//- Celer/Base/PixelBuffer.hpp - PixelBuffer.hpp Module definition ----------//
+//- Celer Graphics
+//  Copyrights (c) 2008-2013 - Felipe de Carvalho
+//
+//                     The Celer OpenGL Framework
+//
+// This file is distributed under GNU General Public License as published by
+// the Free Software Foundation. See LICENSE.TXT for details.
+//
+// @file
+// @created on: Mar 5, 2012
+// @version   : 0.1.0 Initial Release
+// @brief This file contains the declaration of the PixelBuffer class which
+//                provides a wrapper to the OpenGL Pixel Buffer Object.
+//
+//---------------------------------------------------------------------------//
 
 /// System
 #include <assert.h>
@@ -14,44 +24,43 @@
 #include <cstdio>
 #include <string>
 
-#include "OpenGLContext.hpp"
+#include "Celer/OpenGL/OpenGLContext.hpp"
 
 /// Base			- This class can't be copied.
-#include <Celer/Base/Base.hpp>
+#include "Celer/Base/Base.hpp"
 
 namespace Celer
 {
-	namespace OpenGL
-	{
-		class PixelBuffer : public Celer::NonCopyable
-		{
-				// TODO better boolean variable names.
-				// TODO Does Glew is necessary for every Class ?
-			private:
+        namespace OpenGL
+        {
+                class PixelBuffer : public Celer::NonCopyable
+                {
 
-				GLuint 			id_;
-				GLenum 			target_;
-				bool 			ok_;
-				bool 			bound_;
-				std::string		name_;
+                        private:
 
-			public:
-							PixelBuffer ( std::string name );
-							~PixelBuffer ( );
+                                GLuint 			id_;
+                                GLenum 			target_;
+                                bool 			ok_;
+                                bool 			bound_;
+                                std::string		name_;
 
-				GLuint 			id ( ) const;
-				bool 			bind ( GLenum target );
-				bool 			unbind ( );
-				void 			setData ( unsigned size , const void * ptr , GLenum usage );
-				void 			setSubData ( unsigned offs , unsigned size , const void * ptr );
-				void 			getSubData ( unsigned offs , unsigned size , void * ptr );
-				void* 			map ( GLenum access );
-				bool 			unmap ( );
-				void 			clear ( );
+                        public:
+                                PixelBuffer                          ( std::string name );
+                                ~PixelBuffer                         ( );
 
-				static bool 		isSupported ( );
-				std::string 		name ( );
-		};
-	}
+                                GLuint 			id           ( ) const;
+                                bool 			bind         ( GLenum target );
+                                bool 			unbind       ( );
+                                void 			setData      ( unsigned size , const void * ptr , GLenum usage );
+                                void 			setSubData   ( unsigned offs , unsigned size , const void * ptr );
+                                void 			getSubData   ( unsigned offs , unsigned size , void * ptr );
+                                void* 			map          ( GLenum access );
+                                bool 			unmap        ( );
+                                void 			clear        ( );
+
+                                static bool isSupported      ( );
+                                std::string name             ( );
+                };
+        }
 }
 #endif /* PIXELBUFFER_HPP_ */
