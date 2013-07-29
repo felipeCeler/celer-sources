@@ -150,10 +150,16 @@ namespace Celer
 
                         for ( std::map<std::string, Uniform>::iterator it = uniforms_.begin(); it != uniforms_.end(); it++)
                         {
-                                std::cout <<  "Name " << it->first << std::endl;
-                                std::cout <<  "Name " << it->second.location << std::endl;
+                                std::cout <<  "Name "     << it->first << std::endl;
+                                std::cout <<  "location " << it->second.location << std::endl;
                         }
 
+                        for ( std::map<std::string, UniformBlock>::iterator it = uniform_blocks_.begin(); it != uniform_blocks_.end(); it++)
+                        {
+                                std::cout <<  "Name "     << it->first           << std::endl;
+                                std::cout <<  "location " << it->second.index    << std::endl;
+                                std::cout <<  "Size "     << it->second.size     << std::endl;
+                        }
 
 
                 }
@@ -205,10 +211,16 @@ namespace Celer
 
                         for ( std::map<std::string, Uniform>::iterator it = uniforms_.begin(); it != uniforms_.end(); it++)
                         {
-                                std::cout <<  "Name " << it->first << std::endl;
-                                std::cout <<  "Name " << it->second.location << std::endl;
+                                std::cout <<  "Name "     << it->first << std::endl;
+                                std::cout <<  "location " << it->second.location << std::endl;
                         }
 
+                        for ( std::map<std::string, UniformBlock>::iterator it = uniform_blocks_.begin(); it != uniform_blocks_.end(); it++)
+                        {
+                                std::cout <<  "Name "     << it->first           << std::endl;
+                                std::cout <<  "location " << it->second.index    << std::endl;
+                                std::cout <<  "Size "     << it->second.size     << std::endl;
+                        }
 
                 }
 
@@ -343,6 +355,8 @@ namespace Celer
                 void ShaderManager::addUniformBlocks ( )
                 {
 
+                	uniform_blocks_.clear();
+
                         // @see - http://www.opengl.org/wiki/Program_Introspection#Naming
                         GLint number_of_blocks = 0;
 
@@ -350,9 +364,9 @@ namespace Celer
                         glGetProgramInterfaceiv ( id_ , GL_UNIFORM_BLOCK , GL_ACTIVE_RESOURCES , &number_of_blocks );
 
                         // GL_NUM_ACTIVE_VARIABLES, the number of active variables associated with an active uniform block.
-                        const int size_of_uniform_block_properties = 2;
+                        const int size_of_uniform_block_properties = 3;
                         const GLenum block_properties[size_of_uniform_block_properties] =
-                        { GL_NUM_ACTIVE_VARIABLES , GL_NAME_LENGTH };
+                        { GL_NUM_ACTIVE_VARIABLES , GL_NAME_LENGTH ,GL_BUFFER_DATA_SIZE};
 
                         const GLenum active_unifom_variales[1] =
                         {GL_ACTIVE_VARIABLES};
@@ -389,6 +403,11 @@ namespace Celer
                                 /// Indices for each uniform inside the uniform block
                                 glGetProgramResourceiv(id_, GL_UNIFORM_BLOCK, block_index, 1, active_unifom_variales , uniform_block_values[0], 0, &uniform_block_variables[0]);
 
+                                UniformBlock ub;
+
+                                ub.name  = uniform_block_name;
+                                ub.index = block_index;
+                                ub.size  = uniform_block_values[2];
 
                                 /// for each uniform, do the same as addUniform() function.
                                 for ( std::size_t uniform_index = 0; uniform_index < uniform_block_variables.size(); ++uniform_index )
@@ -417,30 +436,17 @@ namespace Celer
                                         u.array_stride  = values[5];
                                         u.offset	= values[6];
 
-                                        addUniformBlock( name, block_index, u);
+                                        ub.uniform[name] = u;
+
+                                        // GL_BUFFER_DATA_SIZE
 
                                 }
 
+                                uniform_blocks_[ub.name] = ub;
                         }
 
                 }
 
-                void ShaderManager::addUniformBlock ( std::string name, GLint index , Uniform uniform )
-                {
-                        UniformBlock u;
-
-                        u.name = name;
-                        u.index = index;
-
-                        u.uniform.type = uniform.type;
-                        u.uniform.location = uniform.location;
-                        u.uniform.array_size = uniform.array_size;
-                        u.uniform.array_stride = uniform.array_stride;
-                        u.uniform.offset = uniform.offset;
-
-                        uniform_blocks_[u.name] = u;
-
-                }
 
                 void ShaderManager::active	( )
                 {

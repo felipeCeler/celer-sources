@@ -8,7 +8,7 @@
 //                    The Celer OpenGL Framework
 //
 // This file is distributed under GNU General Public License as published by
-// the Free Software Foundation. See LICENSE.TXT for details.
+// the Free Software Foundation. @link http://www.gnu.org/licenses/gpl.html.
 //
 // @file
 // @created on: Sep 26, 2012
@@ -58,9 +58,10 @@ namespace Celer
                                 /// This seems to work with a small blocks definition.
                                 struct UniformBlock
                                 {
-                                                std::string 	     name;
-                                                GLuint 		     index;
-                                                Uniform uniform;
+                                                std::string 	               name;
+                                                GLuint 		               index;
+                                                GLuint		               size;
+                                                std::map<std::string, Uniform> uniform;
                                 };
 
                                 struct SubRoutine
@@ -112,8 +113,6 @@ namespace Celer
                                 void addSubRoutine  ( std::string name , GLenum shader_type, GLint index, GLint uniform_location, std::string uniform_name );
 
                                 void addUniformBlocks ( );
-                                void addUniformBlock ( std::string name, GLint index, Uniform uniform );
-
 
                                 void active   	   ( );
                                 void deactive 	   ( );

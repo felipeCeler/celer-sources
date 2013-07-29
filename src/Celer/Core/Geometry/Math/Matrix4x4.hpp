@@ -67,8 +67,9 @@ namespace Celer
 			          							  const Real other31 ,
 			          							  const Real other32 ,
 			          							  const Real other33 );
-
-			virtual ~Matrix4x4 ( );
+			// Existence of virtual function(s) will add 4 bytes of virtual table pointer in the class, which will be added to size of class
+			// @link http://www.cprogramming.com/tutorial/size_of_class_object.html
+			~Matrix4x4 ( );
 
 			Vector4<Real> 		column 					( int index ) const;
 			Vector4<Real> 		row 					( int index ) const;

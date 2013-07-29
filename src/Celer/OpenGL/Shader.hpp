@@ -8,7 +8,7 @@
 //                     The Celer OpenGL Framework
 //
 // This file is distributed under GNU General Public License as published by
-// the Free Software Foundation. See LICENSE.TXT for details.
+// the Free Software Foundation. @link http://www.gnu.org/licenses/gpl.html.
 //
 // @file
 // @created on: Sep 23, 2012

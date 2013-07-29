@@ -8,7 +8,7 @@
 //                    The Celer OpenGL Framework
 //
 // This file is distributed under GNU General Public License as published by
-// the Free Software Foundation. See LICENSE.TXT for details.
+// the Free Software Foundation. @link http://www.gnu.org/licenses/gpl.html.
 //
 // @file
 // @created on: Mar 5, 2012
@@ -63,7 +63,7 @@ namespace Celer
                                 bool isInitialized      ( ) const;
 
                                 bool checkFramebufferStatus ( );
-                                /// - Shows the current Framebuffer parameters and Objects.
+                                /// - Shows the current FrameBuffer parameters and Objects.
                                 void whoIm                  ( ) const;
 
                                 bool create ( const GLuint width ,
