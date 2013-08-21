@@ -80,7 +80,6 @@ namespace Celer
 
 			void fromPointCloud( typename std::vector<Celer::Vector3<Real> >::const_iterator new_point_begin, typename std::vector<Celer::Vector3<Real> >::const_iterator new_point_end)
 			{
-				this->reset();
 
 				for ( typename std::vector<Celer::Vector3<Real> >::const_iterator new_point = new_point_begin; new_point != new_point_end; new_point++)
 				{
@@ -103,7 +102,6 @@ namespace Celer
 
 			void fromPointCloud( typename std::vector<Celer::Vector4<Real> >::const_iterator new_point_begin, typename std::vector<Celer::Vector4<Real> >::const_iterator new_point_end)
 			{
-				this->reset();
 
 				for ( typename std::vector<Celer::Vector4<Real> >::const_iterator new_point = new_point_begin; new_point != new_point_end; new_point++)
 				{
@@ -129,8 +127,6 @@ namespace Celer
 			                     const Celer::Vector3<Real>& second_basis,
 			                     const Celer::Vector3<Real>& third_basis )
 			{
-				this->reset();
-
 				// Reference :
 				// Geometric Tools, LLC
 				// Copyright (c) 1998-2012
