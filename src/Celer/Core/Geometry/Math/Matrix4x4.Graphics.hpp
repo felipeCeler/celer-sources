@@ -143,8 +143,8 @@ namespace Celer
 
 		orthographicProjectionMatrix[2].x = static_cast<Real> ( 0 );
 		orthographicProjectionMatrix[2].y = static_cast<Real> ( 0 );
-		orthographicProjectionMatrix[2].z = 0;//- ( 2.0 / ( far - near ) ));
-		orthographicProjectionMatrix[2].w = 0;//- (( far + near ) / ( far - near ));
+		orthographicProjectionMatrix[2].z = - ( 2.0 / ( far - near ) );
+		orthographicProjectionMatrix[2].w = - (( far + near ) / ( far - near ));
 
 		orthographicProjectionMatrix[3].x = static_cast<Real> ( 0 );
 		orthographicProjectionMatrix[3].y = static_cast<Real> ( 0 );

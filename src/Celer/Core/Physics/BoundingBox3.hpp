@@ -40,6 +40,7 @@ namespace Celer
 
 			/// For the oriented bounding Box;
 			Celer::Vector3<Real> basis_[3];
+			Real extends;
 
 		public:
 
@@ -273,7 +274,7 @@ namespace Celer
 			}
 
 
-			virtual ~BoundingBox3 ( )
+			~BoundingBox3 ( )
 			{
 
 			}
